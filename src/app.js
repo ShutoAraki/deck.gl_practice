@@ -6,10 +6,11 @@ import {
   MapStylePicker,
   GEOM_CONTROLS
 } from './controls';
-import { tooltipStyle } from './style';
 import DeckGL from 'deck.gl';
 import hexCorePromise from '../../../data/hexCore';
+import chomeCorePromise from '../../../data/chomeCore';
 import { renderLayers } from './deckgl-layers';
+import HoverCard from './hoverCard';
 
 const INITIAL_VIEW_STATE = {
   longitude: 139.59663852303368,
@@ -42,8 +43,30 @@ export default class App extends Component {
   componentDidMount() {
     this._processData();
   }
+  
+  // Returns the aggregate information
+  // for color configuration purpose
+  // geoms is a dict of all the data
+  // vars is a list of variables of interest
+  getAggInfo(geoms, vars) {
+    const ans = {};
+    vars.map(varname => {
+      const data = geoms.map(d => d[varname]);
+      const mean = data.reduce((a, b) => a + b) / data.length;
+      const std = Math.sqrt(data.map(d => Math.pow(d-mean, 2)).reduce((a, b) => a + b) / data.length);
+      const min = Math.min(...data);
+      const max = Math.max(...data);
+      ans[varname + '_mean'] = mean;
+      ans[varname + '_std'] = std;
+      ans[varname + '_min'] = min;
+      ans[varname + '_max'] = max;
+    });
+    return ans;
+  }
 
+  // 
   _processData = () => {
+
     hexCorePromise.then(hexCore => {
       const points = hexCore.reduce((accu, curr) => {
         accu.push({
@@ -55,21 +78,40 @@ export default class App extends Component {
       const geoms = hexCore.reduce((accu, curr) => {
         accu.push({
           polygon: curr.geometry.coordinates,
-          population: curr.totalPopulation
+          population: curr.totalPopulation,
+          id: curr.hexNum
         });
         return accu;
       }, []);
       this.setState({
         points: points,
-        geometry: geoms
+        hex_geoms: geoms,
+        agg_info: this.getAggInfo(geoms, ['population'])
       });
-      console.log(geoms.slice(0, 7));
-    }, console.error)
+    }, console.error);
+
+    chomeCorePromise.then(chomeCore => {
+      const geoms = chomeCore.reduce((accu, curr) => {
+        accu.push({
+          polygon: curr.geometry.coordinates,
+          population: curr.totalPopulation,
+          addressName: curr.addressName,
+          id: curr.addressCode,
+        });
+        return accu;
+      }, []);
+      this.setState({
+        chome_geoms: geoms
+      });
+    }, console.error);
   };
 
   _onHover({ x, y, object }) {
-    const label = object ? object.id : null;
-
+    var label = object.id ? object.id : null;
+    if ('population' in object) {
+      label += '\nPopulation: ' + object.population.toFixed(2) + '\n';
+      label += 'addressName' + object.addressName;
+    }
     this.setState({ hover: { x, y, hoveredObject: object, label } });
   }
 
@@ -83,12 +125,12 @@ export default class App extends Component {
 
   render() {
     if (!this.state.points.length) {
+      console.log("Data is empty!");
       return null;
     }
-    const { hover, settings } = this.state;
     return (
       <div>
-        {hover.hoveredObject && (
+        {/* {hover.hoveredObject && (
           <div
             style={{
               ...tooltipStyle,
@@ -97,7 +139,10 @@ export default class App extends Component {
           >
             <div>{hover.label}</div>
           </div>
-        )}
+        )} */}
+        <HoverCard
+          hover={this.state.hover}
+        /> 
         <MapStylePicker
           onStyleChange={this.onStyleChange}
           currentStyle={this.state.style}
@@ -111,7 +156,8 @@ export default class App extends Component {
           layers={renderLayers({
             data: this.state,
             onHover: hover => this._onHover(hover),
-            settings: this.state.settings
+            settings: this.state.settings,
+            getAggInfo: this.getAggInfo
           })}
           initialViewState={INITIAL_VIEW_STATE}
           controller

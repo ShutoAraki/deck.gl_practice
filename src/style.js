@@ -23,6 +23,7 @@ export const layerControl = {
   fontFamily:
     'ff-clan-web-pro, "Helvetica Neue", Helvetica, sans-serif !important',
   fontSize: '12px',
+  fontWeight: 'bold',
   lineHeight: 1.833,
   width: 200,
   position: 'absolute',
@@ -30,7 +31,11 @@ export const layerControl = {
   right: '20px',
   padding: '20px',
   zIndex: 100,
-  background: 'white'
+  background: 'white',
+  height: 200,
+  maxHeight: 200,
+  overflowX: 'hidden',
+  backgroundColor: 'rgba(32, 141, 214, 0.8)'
 };
 
 export const charts = {
