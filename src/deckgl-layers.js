@@ -1,34 +1,10 @@
 import { ScatterplotLayer, HexagonLayer, PolygonLayer, DeckGL } from 'deck.gl';
 import DataFrame from 'dataframe-js';
-import { data_format } from './style';
+import { data_format, layerConfig } from './style';
 
-// in RGB
-
-const HEATMAP_COLORS = [
-  [255, 255, 204],
-  [199, 233, 180],
-  [127, 205, 187],
-  [65, 182, 196],
-  [44, 127, 184],
-  [37, 52, 148]
-];
-
-const LIGHT_SETTINGS = {
-  lightsPosition: [-73.8, 40.5, 8000, -74.2, 40.9, 8000],
-  ambientRatio: 0.4,
-  diffuseRatio: 0.6,
-  specularRatio: 0.2,
-  lightsStrength: [0.8, 0.0, 0.8, 0.0],
-  numberOfLights: 2
-};
-
-const elevationRange = [0, 1000];
-
-const PICKUP_COLOR = [114, 19, 108];
-const DROPOFF_COLOR = [243, 185, 72];
-
-// TODO: Data loading on-demand
-// Maybe return the 
+// Picks the right data from given data type (chome or hex)
+// and colname. Then returns a data Promise object that
+// eventually returns the casted data
 function _loadData(dtype, colname) {
   var data_dir = 'http://127.0.0.1:8081/';
   if (dtype === 'hex') {
@@ -58,11 +34,23 @@ function _t_val(val) {
 }
 
 function _hexToRgb(hex) {
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  var result;
+  var alpha = 255;
+  // if alpha channel is included in the stringk
+  if (hex.length === 9) {
+    alpha = Number(hex.slice(hex.length-2)) / 100 * 255;
+    const real_hex = hex.slice(0, hex.length-2);
+    result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(real_hex);
+  } else if (hex.length === 7) {
+    result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  } else {
+    console.error("Wrong hex color string: " + hex);
+  }
   return result ? {
     r: parseInt(result[1], 16),
     g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
+    b: parseInt(result[3], 16),
+    a: alpha
   } : null;
 }
 
@@ -90,34 +78,77 @@ function _parseColorScheme(color_strs, scale=null) {
   return colors;
 }
 
-function _getColor(d, agg_info, colname) {
-  // This object at least needs to have 0 and 1.0 colors specified
+function _generateColorDict(layerInfo, min, max) {
+  var scale = Object.keys(layerInfo).includes('scale') ? [...layerInfo.scale] : null;
+  const layer_colors = [...layerInfo.colors];
+  const color_arr = layerInfo.reverse ? layer_colors.reverse() : layer_colors;
+  if (color_arr.length < 2) {
+    console.error("You need two or more colors specified.");
+  }
+  if (scale === null) {
+      const step = 1 / (color_arr.length-1);
+      scale = [];
+      for (var num = 0; num <= 1.0; num += step) {
+        scale.push(num);
+      }
+      if (scale[scale.length-1] !== 1.0) {
+        scale[scale.length-1] = 1.0;
+      }
+  } else if (scale.length !== color_arr.length) {
+    console.error("The scale and colors must have the same number of elements.");
+  } else if (layerInfo.scaleBy === 'value') {
+    // Map raw values to percentage
+    for (var i = 0; i < scale.length; i++) {
+      scale[i] = scale[i] / (max - min) - min / (max - min);
+    }
+    // For now, replace the first and last items with min and max
+    scale[0] = min;
+    scale[scale.length-1] = max;
+  }
+  var colors = {};
+  for (var i = 0; i < scale.length; i++) {
+    colors[scale[i]] = color_arr[i];
+  }
+  return colors;
+}
+
+function _getColor(d, agg_info, colname, fullname) {
+  /*
+  // This scale array at least needs to have 0 and 1.0 colors specified
   // Paste colors here
   const color_strs = `
-  #ffffcc
-  #ffeda0
-  #fed976
-  #feb24c
-  #fd8d3c
-  #fc4e2a
-  #e31a1c
+  #ffffcc10
+  #ffeda040
+  #fed97650
+  #feb24c60
+  #fd8d3c70
+  #78c67980
+  #e31a1c90
   #b10026
   `;
   const colors = _parseColorScheme(color_strs);
-  /* normalization process 
-  const mean = agg_info[colname + '_mean'];
-  const std = agg_info[colname + '_std'];
-  const normalized = (d[colname] - mean) / std;
   */
+  const layerInfo = layerConfig.layers[fullname];
   const min = agg_info[colname + '_min'];
   const max = agg_info[colname + '_max'];
-  const t = (d[colname] - min) / (max - min);
+  const colors = _generateColorDict(layerInfo, min, max)
+
+  var t;
+  if (layerInfo.type === 'normalized') {
+    const mean = agg_info[colname + '_mean'];
+    const std = agg_info[colname + '_std'];
+    const normalized = (d[colname] - mean) / std;
+    // Get the parametric value
+    t = _t_val(normalized);
+  } else if (layerInfo.type === 'standardized') {
+    t = (d[colname] - min) / (max - min);
+  } else {
+    console.error("Invalid layer type: " + layerInfo.type + ". Supported types are 'standardized' and 'normalized'");
+  }
 
 // /*
-  // Get the parametric value
-  // const t = _t_val(normalized);
   // Get the corresponding color range
-  var color_marks = Object.keys(colors).sort();
+  const color_marks = Object.keys(colors).sort();
   var color_range = [];
   for (var i = 0; i < color_marks.length-1; i++) {
     if ((color_marks[i] <= t) && (t <= color_marks[i+1])) {
@@ -137,28 +168,13 @@ function _getColor(d, agg_info, colname) {
   const green = (color2.g - color1.g) * t + color1.g;
   const blue = (color2.b - color1.b) * t + color1.b;
 // */
-  const alpha = 255 * (0.8*t + 0.2);
+  // const alpha = 255 * (0.8*t + 0.2);
+  const alpha = (color2.a - color1.a) * t + color1.a;
   // const red = 255 / (1 + Math.exp(1.5*normalized));
   // const green = 255;
   // const blue = 3;
   // Sigmoid interpolation for alpha
   // const alpha = 255 / (1 + Math.exp(-1.5*normalized)) + 50;
-  return [red, green, blue, alpha];
-}
-
-function _getPopulationColor(d, agg_info) {
-  const mean = agg_info.population_mean;
-  const std = agg_info.population_std;
-  const normalized_pop = (d.population - mean) / std;
-  // const min = agg_info.population_min;
-  // const max = agg_info.population_max;
-  // const standardized_pop = (d.population - min) / (max - min);
-  const red = 255;
-  // const green = 255 / (max - min) * (standardized_pop - min); // Linear interpolation
-  // const green = -normalized_pop * 255 / 6 + 127.5; // Linear interpolation
-  const green = 255 / (1 + Math.exp(1.5*normalized_pop)); // Sigmoid interpolation
-  const blue = 3;
-  const alpha = 0.1 * 255 * d.population;
   return [red, green, blue, alpha];
 }
 
@@ -199,8 +215,8 @@ function _getLayers(settings, getAggInfo, data, onHover) {
                     lineWidthMinPixels: 1,
                     getPolygon: d => d.polygon,
                     getElevation: 10,
-                    getFillColor: d => _getColor(d, data.agg_info, colname),
-                    getLineColor: d => _getColor(d, data.agg_info, colname),
+                    getFillColor: d => _getColor(d, data.agg_info, colname, fullname),
+                    getLineColor: d => _getColor(d, data.agg_info, colname, fullname),
                     getLineWidth: 0,
                     onHover,
                     ...settings

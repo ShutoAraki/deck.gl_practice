@@ -234,3 +234,24 @@ export const data_format = {
   "timeToTokyo": Number,
   "waterSurface": Number
 };
+
+export const layerConfig = {
+  layers: {
+    Hex_NumJobs: {
+      colors: ['#ffffe5', '#f7fcb9', '#d9f0a3', '#addd8e', '#78c679'],
+      scale: [0, 0.25, 0.5, 0.9, 1.0],
+      scaleBy: 'percentage',
+      reverse: false,
+      type: 'normalized',
+      interpolate: true
+    },
+    Hex_TimeToTokyo: {
+      colors: ['#ffffe505', '#f7fcb930', '#d9f0a380', '#addd8e90', '#78c679'],
+      scale: [2, 15, 45, 80, 120], // Actual numbers
+      scaleBy: 'value', // Ac
+      reverse: true,
+      type: 'standardized',
+      interpolate: true
+    }
+  }
+};
