@@ -21,7 +21,7 @@ export default class HoverCard extends Component {
                   transform: `translate(${hover.x}px, ${hover.y}px)`
               }}>
               {keys.map(key => (
-                  <div>{key}: {obj[key]}</div> 
+                  <div key={key + obj[key]}>{key}: {obj[key]}</div> 
               ))} 
             </div>
         );

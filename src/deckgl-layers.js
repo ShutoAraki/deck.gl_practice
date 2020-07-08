@@ -1,6 +1,6 @@
 import { ScatterplotLayer, HexagonLayer, PolygonLayer, DeckGL } from 'deck.gl';
 import DataFrame from 'dataframe-js';
-import { load } from '@loaders.gl/core';
+import { data_format } from './style';
 
 // in RGB
 
@@ -42,27 +42,107 @@ function _loadData(dtype, colname) {
   return DataFrame.fromCSV(data_dir).then(df => {
     const dataRows = df.toArray();
     const fields = df.listColumns();
-    // TODO: Global format file
-    const format = {
-      numJobs: Number
-    };
     const castedData = dataRows.map(r => r.reduce((prev, curr, i) => {
         const field = fields[i];
-        prev[field] = format[field](curr);
+        prev[field] = data_format[field](curr);
         return prev;
     }, {}));
     return castedData;
   });
 }
 
+function _t_val(val) {
+  const pre_t = val / 8 + 0.5;
+  // Clip to [0, 1]
+  return pre_t > 1.0 ? 1.0 : pre_t < 0.0 ? 0.0 : pre_t;
+}
+
+function _hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
+}
+
+function _parseColorScheme(color_strs, scale=null) {
+  const raw_colors = color_strs.split('\n').map(x => x.replace(/\s+/g,'')).filter(x => x !== "");
+  if (raw_colors.length < 2) {
+    console.error("You need two or more colors specified.");
+  }
+  if (scale === null) {
+    const step = 1 / (raw_colors.length-1);
+    scale = [];
+    for (var num = 0; num <= 1.0; num += step) {
+      scale.push(num);
+    }
+    if (scale[scale.length-1] !== 1.0) {
+      scale[scale.length-1] = 1.0;
+    }
+  } else if (scale.length !== raw_colors.length) {
+    console.error("The scale and colors must have the same number of elements.");
+  }
+  var colors = {};
+  for (var i = 0; i < scale.length; i++) {
+    colors[scale[i]] = raw_colors[i];
+  }
+  return colors;
+}
+
 function _getColor(d, agg_info, colname) {
+  // This object at least needs to have 0 and 1.0 colors specified
+  // Paste colors here
+  const color_strs = `
+  #ffffcc
+  #ffeda0
+  #fed976
+  #feb24c
+  #fd8d3c
+  #fc4e2a
+  #e31a1c
+  #b10026
+  `;
+  const colors = _parseColorScheme(color_strs);
+  /* normalization process 
   const mean = agg_info[colname + '_mean'];
   const std = agg_info[colname + '_std'];
   const normalized = (d[colname] - mean) / std;
-  const red = 255 / (1 + Math.exp(1.5*normalized));
-  const green = 255;
-  const blue = 3;
-  const alpha = 0.1 * 255 * d[colname];
+  */
+  const min = agg_info[colname + '_min'];
+  const max = agg_info[colname + '_max'];
+  const t = (d[colname] - min) / (max - min);
+
+// /*
+  // Get the parametric value
+  // const t = _t_val(normalized);
+  // Get the corresponding color range
+  var color_marks = Object.keys(colors).sort();
+  var color_range = [];
+  for (var i = 0; i < color_marks.length-1; i++) {
+    if ((color_marks[i] <= t) && (t <= color_marks[i+1])) {
+      const color1 = _hexToRgb(colors[color_marks[i]]);
+      const color2 = _hexToRgb(colors[color_marks[i+1]]);
+      color_range.push(color1);
+      color_range.push(color2);
+      break;
+    }
+  }
+  const color1 = color_range[0];
+  const color2 = color_range[1];
+  // const red = (color2[0] - color1[0]) * t + color1[0];
+  // const green = (color2[1] - color1[1]) * t + color1[1];
+  // const blue = (color2[2] - color1[2]) * t + color1[2];
+  const red = (color2.r - color1.r) * t + color1.r;
+  const green = (color2.g - color1.g) * t + color1.g;
+  const blue = (color2.b - color1.b) * t + color1.b;
+// */
+  const alpha = 255 * (0.8*t + 0.2);
+  // const red = 255 / (1 + Math.exp(1.5*normalized));
+  // const green = 255;
+  // const blue = 3;
+  // Sigmoid interpolation for alpha
+  // const alpha = 255 / (1 + Math.exp(-1.5*normalized)) + 50;
   return [red, green, blue, alpha];
 }
 
@@ -167,7 +247,6 @@ export function renderLayers(props) {
   const { data, onHover, settings, getAggInfo } = props;
   const points = data.points;
   const layers = _getLayers(settings, getAggInfo, data, onHover);
-  console.log(layers);
   return layers;
   // return [
   //   settings.showScatterplot &&
