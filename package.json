@@ -5,6 +5,9 @@
     "start": "webpack-dev-server --progress --hot --open"
   },
   "dependencies": {
+    "@loaders.gl/core": "^2.2.6",
+    "@loaders.gl/wkt": "^2.2.6",
+    "chroma-js": "^2.1.0",
     "dataframe-js": "^1.4.3",
     "deck.gl": "^6.2.4",
     "luma.gl": "^6.2.0",
@@ -33,6 +36,6 @@
     "babel-preset-stage-2": "^6.24.1",
     "offline-plugin": "^5.0.5",
     "webpack": "^2.4.0",
-    "webpack-dev-server": "^3.1.11"
+    "webpack-dev-server": "^2.4.0"
   }
 }
