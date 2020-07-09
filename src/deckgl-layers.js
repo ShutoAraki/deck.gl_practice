@@ -1,6 +1,7 @@
-import { ScatterplotLayer, HexagonLayer, PolygonLayer, DeckGL } from 'deck.gl';
+import { ScatterplotLayer, HexagonLayer, PolygonLayer } from 'deck.gl';
 import DataFrame from 'dataframe-js';
-import { data_format, layerConfig } from './style';
+import { data_format, layerConfig } from './CHANGEME';
+import chroma from 'chroma-js';
 
 // Picks the right data from given data type (chome or hex)
 // and colname. Then returns a data Promise object that
@@ -27,8 +28,8 @@ function _loadData(dtype, colname) {
   });
 }
 
-function _t_val(val) {
-  const pre_t = val / 8 + 0.5;
+function _t_val(val, std_cutoff=4) {
+  const pre_t = val / (std_cutff*2) + 0.5;
   // Clip to [0, 1]
   return pre_t > 1.0 ? 1.0 : pre_t < 0.0 ? 0.0 : pre_t;
 }
@@ -79,15 +80,14 @@ function _parseColorScheme(color_strs, scale=null) {
 }
 
 function _generateColorDict(layerInfo, min, max) {
-  var scale = Object.keys(layerInfo).includes('scale') ? [...layerInfo.scale] : null;
+  var scale = Object.keys(layerInfo).includes('scale') ? [...layerInfo.scale] : [];
   const layer_colors = [...layerInfo.colors];
   const color_arr = layerInfo.reverse ? layer_colors.reverse() : layer_colors;
   if (color_arr.length < 2) {
     console.error("You need two or more colors specified.");
   }
-  if (scale === null) {
+  if (scale.length === 0) {
       const step = 1 / (color_arr.length-1);
-      scale = [];
       for (var num = 0; num <= 1.0; num += step) {
         scale.push(num);
       }
@@ -97,13 +97,14 @@ function _generateColorDict(layerInfo, min, max) {
   } else if (scale.length !== color_arr.length) {
     console.error("The scale and colors must have the same number of elements.");
   } else if (layerInfo.scaleBy === 'value') {
+    // For now, replace the first and last items with min and max
+    // TODO: Inform the user with some color scheme
+    scale[0] = min;
+    scale[scale.length-1] = max;
     // Map raw values to percentage
     for (var i = 0; i < scale.length; i++) {
       scale[i] = scale[i] / (max - min) - min / (max - min);
     }
-    // For now, replace the first and last items with min and max
-    scale[0] = min;
-    scale[scale.length-1] = max;
   }
   var colors = {};
   for (var i = 0; i < scale.length; i++) {
@@ -113,22 +114,15 @@ function _generateColorDict(layerInfo, min, max) {
 }
 
 function _getColor(d, agg_info, colname, fullname) {
-  /*
-  // This scale array at least needs to have 0 and 1.0 colors specified
-  // Paste colors here
-  const color_strs = `
-  #ffffcc10
-  #ffeda040
-  #fed97650
-  #feb24c60
-  #fd8d3c70
-  #78c67980
-  #e31a1c90
-  #b10026
-  `;
-  const colors = _parseColorScheme(color_strs);
-  */
-  const layerInfo = layerConfig.layers[fullname];
+  // If the data is categorical
+  if (agg_info[colname + '_str']) {
+    // Random color for each category
+    const colors = agg_info[colname + '_colors'];
+    const hexColor = colors[d[colname]];
+    const rgbColor = _hexToRgb(hexColor);
+    return [rgbColor.r, rgbColor.g, rgbColor.b, rgbColor.a];
+  }
+  const layerInfo = Object.keys(layerConfig.layers).includes(fullname) ? layerConfig.layers[fullname] : layerConfig.layers.default;
   const min = agg_info[colname + '_min'];
   const max = agg_info[colname + '_max'];
   const colors = _generateColorDict(layerInfo, min, max)
@@ -145,31 +139,56 @@ function _getColor(d, agg_info, colname, fullname) {
   } else {
     console.error("Invalid layer type: " + layerInfo.type + ". Supported types are 'standardized' and 'normalized'");
   }
-
 // /*
   // Get the corresponding color range
   const color_marks = Object.keys(colors).sort();
   var color_range = [];
-  for (var i = 0; i < color_marks.length-1; i++) {
-    if ((color_marks[i] <= t) && (t <= color_marks[i+1])) {
-      const color1 = _hexToRgb(colors[color_marks[i]]);
-      const color2 = _hexToRgb(colors[color_marks[i+1]]);
-      color_range.push(color1);
-      color_range.push(color2);
-      break;
+  if (layerInfo.interpolate) {
+    for (var i = 0; i < color_marks.length-1; i++) {
+      if ((color_marks[i] <= t) && (t <= color_marks[i+1])) {
+        // console.log(color_marks[i] + " " + color_marks[i+1]);
+        const color1 = _hexToRgb(colors[color_marks[i]]);
+        const color2 = _hexToRgb(colors[color_marks[i+1]]);
+        color_range.push(color1);
+        color_range.push(color2);
+        break;
+      }
+    }
+  } else {
+    var alt_color_marks = [];
+    const step = 1 / color_marks.length;
+    var current_val = 0.0;
+    for (var i = 0; i <= color_marks.length; i++) {
+      alt_color_marks.push(current_val);
+      current_val += step;
+    }
+    // Force the last point to be 1.0
+    if (alt_color_marks[alt_color_marks.length-1] !== 1.0) {
+      alt_color_marks[alt_color_marks.length-1] = 1.0;
+    }
+    for (var i = 0; i < alt_color_marks.length-1; i++) {
+      if ((alt_color_marks[i] <= t) && (t <= alt_color_marks[i+1])) {
+        const theColor = _hexToRgb(colors[color_marks[i]]);
+        color_range.push(theColor);
+        color_range.push(theColor);
+        break;
+      }
     }
   }
+  
   const color1 = color_range[0];
   const color2 = color_range[1];
-  // const red = (color2[0] - color1[0]) * t + color1[0];
-  // const green = (color2[1] - color1[1]) * t + color1[1];
-  // const blue = (color2[2] - color1[2]) * t + color1[2];
-  const red = (color2.r - color1.r) * t + color1.r;
-  const green = (color2.g - color1.g) * t + color1.g;
-  const blue = (color2.b - color1.b) * t + color1.b;
+  // const red = layerInfo.interpolate ? (color2.r - color1.r) * t + color1.r : (color1.r + color2.r) / 2;
+  // const green = layerInfo.interpolate ? (color2.g - color1.g) * t + color1.g : (color1.g + color2.g) / 2;
+  // const blue = layerInfo.interpolate ? (color2.b - color1.b) * t + color1.b : (color1.b + color2.b) / 2;
+  const layer_colors = [...layerInfo.colors];
+  var bez = chroma.scale(layerInfo.reverse ? layer_colors.reverse() : layer_colors);
+  const red = layerInfo.interpolate ? bez(t).rgb()[0] : color1.r;
+  const green = layerInfo.interpolate ? bez(t).rgb()[1] : color1.g;
+  const blue = layerInfo.interpolate ? bez(t).rgb()[2] : color1.b;
 // */
   // const alpha = 255 * (0.8*t + 0.2);
-  const alpha = (color2.a - color1.a) * t + color1.a;
+  const alpha = layerInfo.interpolate ? (color2.a - color1.a) * t + color1.a : (color1.a + color2.a) / 2;
   // const red = 255 / (1 + Math.exp(1.5*normalized));
   // const green = 255;
   // const blue = 3;
@@ -184,7 +203,7 @@ function _getDType(str) {
 }
 
 function _getColName(str) {
-  const name = str.split('_')[1]
+  const name = str.split('_')[1]; // This is why you can't name your column with _
   return name[0].toLowerCase() + name.slice(1);
 }
 
@@ -224,154 +243,11 @@ function _getLayers(settings, getAggInfo, data, onHover) {
     layers.push(layer);
   });
 
-  //   if (dtype === "hex") {
-  //     for (var i = 0; i < hex_geoms.length; i++) {
-  //       hex_geoms[i][colname] = loadedData[i][colname];
-  //     }
-  //   } else if (dtype === "chome") {
-  //     for (var i = 0; i < chome_geoms.length; i++) {
-  //       chome_geoms[i][colname] = loadedData[i][colname];
-  //     }
-  //   } else {
-  //     console.error("Invalid data type: " + dtype);
-  //   }
-  //   data.agg_info = getAggInfo(dtype === "hex" ? hex_geoms : chome_geoms, [colname])
-  //   layers.push(
-  //     new PolygonLayer({
-  //       id: fullname,
-  //       data: dtype === "hex" ? hex_geoms : chome_geoms,
-  //       pickable: true,
-  //       stroked: true,
-  //       filled: true,
-  //       wireframe: true,
-  //       autoHighlight: true,
-  //       lineWidthMinPixels: 1,
-  //       getPolygon: d => d.polygon,
-  //       getElevation: 10,
-  //       getFillColor: d => _getColor(d, data.agg_info, colname),
-  //       getLineColor: d => _getColor(d, data.agg_info, colname),
-  //       getLineWidth: 0,
-  //       onHover,
-  //       ...settings
-  //     })
-  //   );
-  // });
   return layers;
 }
 
 export function renderLayers(props) {
   const { data, onHover, settings, getAggInfo } = props;
-  const points = data.points;
   const layers = _getLayers(settings, getAggInfo, data, onHover);
   return layers;
-  // return [
-  //   settings.showScatterplot &&
-  //     new ScatterplotLayer({
-  //       id: 'scatterplot',
-  //       data: points,
-  //       getPosition: d => d.position,
-  //       getColor: d => (d.pickup ? PICKUP_COLOR : DROPOFF_COLOR),
-  //       getRadius: d => 5,
-  //       opacity: 0.5,
-  //       pickable: true,
-  //       radiusMinPixels: 0.25,
-  //       radiusMaxPixels: 30,
-  //       onHover,
-  //       ...settings
-  //     }),
-  //   settings.showHexagon &&
-  //     new HexagonLayer({
-  //       id: 'heatmap',
-  //       data: points,
-  //       colorRange: HEATMAP_COLORS,
-  //       elevationRange,
-  //       elevationScale: 5,
-  //       extruded: false,
-  //       getPosition: d => d.position,
-  //       lightSettings: LIGHT_SETTINGS,
-  //       opacity: 0.8,
-  //       pickable: true,
-  //       onHover,
-  //       ...settings
-  //     }),
-  //   settings.showHexPopulation && 
-  //     new PolygonLayer({
-  //       id: 'hex_total_population',
-  //       data: hex_geoms,
-  //       pickable: true,
-  //       stroked: true,
-  //       filled: true,
-  //       wireframe: true,
-  //       autoHighlight: true,
-  //       lineWidthMinPixels: 1,
-  //       getPolygon: d => d.polygon,
-  //       getElevation: 10,
-  //       // getFillColor: d => [d.population * 2, 185, 72, 0.7*255],
-  //       // getLineColor: d => [d.population * 2, 185, 72, 0.7*255],
-  //       getFillColor: d => _getPopulationColor(d, data.agg_info),
-  //       getLineColor: d => _getPopulationColor(d, data.agg_info), 
-  //       getLineWidth: 0,
-  //       onHover,
-  //       ...settings
-  //     }),
-  //   settings.showChomePopulation && 
-  //     new PolygonLayer({
-  //       id: 'chome_total_population',
-  //       data: chome_geoms,
-  //       pickable: true,
-  //       stroked: true,
-  //       filled: true,
-  //       wireframe: true,
-  //       autoHighlight: true,
-  //       lineWidthMinPixels: 1,
-  //       getPolygon: d => d.polygon,
-  //       getElevation: 10,
-  //       // getFillColor: d => [d.population * 2, 185, 72, 0.7*255],
-  //       // getLineColor: d => [d.population * 2, 185, 72, 0.7*255],
-  //       getFillColor: d => _getPopulationColor(d, data.agg_info),
-  //       getLineColor: d => _getPopulationColor(d, data.agg_info),
-  //       getLineWidth: 0,
-  //       onHover,
-  //       ...settings
-  //     }),
-  //   // settings.showHexNumJobs && 
-  //   //   new PolygonLayer({
-  //   //     id: 'hex_num_jobs',
-  //   //     data: hex_geoms,
-  //   //     pickable: true,
-  //   //     stroked: true,
-  //   //     filled: true,
-  //   //     wireframe: true,
-  //   //     autoHighlight: true,
-  //   //     lineWidthMinPixels: 1,
-  //   //     getPolygon: d => d.polygon,
-  //   //     getElevation: 10,
-  //   //     getFillColor: d => _getColor(d, 'hex', 'numJobs'),
-  //   //     getLineColor: d => _getColor(d, 'hex', 'numJobs'),
-  //   //     getLineWidth: 0,
-  //   //     onHover,
-  //   //     ...settings
-  //   //   }),
-  // ];
-  const other_layers = [new PolygonLayer({
-    id: 'hex_total_population',
-    data: data.hex_geoms,
-    pickable: true,
-    stroked: true,
-    filled: true,
-    wireframe: true,
-    autoHighlight: true,
-    lineWidthMinPixels: 1,
-    getPolygon: d => d.polygon,
-    getElevation: 10,
-    // getFillColor: d => [d.population * 2, 185, 72, 0.7*255],
-    // getLineColor: d => [d.population * 2, 185, 72, 0.7*255],
-    getFillColor: d => _getPopulationColor(d, data.agg_info),
-    getLineColor: d => _getPopulationColor(d, data.agg_info), 
-    getLineWidth: 0,
-    onHover,
-    ...settings
-  })];
-  console.log(other_layers);
-  // return other_layers;
 }

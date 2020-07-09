@@ -52,19 +52,35 @@ export default class App extends Component {
     const ans = {};
     vars.map(varname => {
       const data = geoms.map(d => d[varname]);
-      const mean = data.reduce((a, b) => a + b) / data.length;
-      const std = Math.sqrt(data.map(d => Math.pow(d-mean, 2)).reduce((a, b) => a + b) / data.length);
-      const min = Math.min(...data);
-      const max = Math.max(...data);
-      ans[varname + '_mean'] = mean;
-      ans[varname + '_std'] = std;
-      ans[varname + '_min'] = min;
-      ans[varname + '_max'] = max;
+      if (typeof data[0] === "string") {
+        // Categorical data
+        ans[varname + '_str'] = true;
+        var counts = {};
+        for (var i = 0; i < data.length; i++) {
+          counts[data[i]] = 1 + (counts[data[i]] || 0);
+        }
+        // Generate random colors and overwrite counts
+        for (var key of Object.keys(counts)) {
+          counts[key] = "#" + Math.floor(Math.random()*16777215).toString(16) + "90";
+        }
+        ans[varname + '_colors'] = counts;
+      } else {
+        // Numerical data
+        ans[varname + '_str'] = false;
+        const mean = data.reduce((a, b) => a + b) / data.length;
+        const std = Math.sqrt(data.map(d => Math.pow(d-mean, 2)).reduce((a, b) => a + b) / data.length);
+        const min = Math.min(...data);
+        const max = Math.max(...data);
+        ans[varname + '_mean'] = mean;
+        ans[varname + '_std'] = std;
+        ans[varname + '_min'] = min;
+        ans[varname + '_max'] = max;
+      }
     });
     return ans;
   }
 
-  // 
+  // Loads the core data (geometries and primary keys)
   _processData = () => {
 
     hexCorePromise.then(hexCore => {
@@ -106,6 +122,7 @@ export default class App extends Component {
     }, console.error);
   };
 
+  // Basic info on hover
   _onHover({ x, y, object }) {
     var label = object.id ? object.id : null;
     if ('population' in object) {
