@@ -7,8 +7,8 @@ import {
   GEOM_CONTROLS
 } from './controls';
 import DeckGL from 'deck.gl';
-import hexCorePromise from '../../../data/hexCore';
-import chomeCorePromise from '../../../data/chomeCore';
+import hexCorePromise from './data/hexCore';
+import chomeCorePromise from './data/chomeCore';
 import { renderLayers } from './deckgl-layers';
 import HoverCard from './hoverCard';
 

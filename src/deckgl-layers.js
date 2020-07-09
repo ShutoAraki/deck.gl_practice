@@ -29,7 +29,7 @@ function _loadData(dtype, colname) {
 }
 
 function _t_val(val, std_cutoff=4) {
-  const pre_t = val / (std_cutff*2) + 0.5;
+  const pre_t = val / (std_cutoff*2) + 0.5;
   // Clip to [0, 1]
   return pre_t > 1.0 ? 1.0 : pre_t < 0.0 ? 0.0 : pre_t;
 }
