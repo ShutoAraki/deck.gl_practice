@@ -123,12 +123,17 @@ export default class App extends Component {
 
   // Basic info on hover
   _onHover({ x, y, object }) {
-    var label = object.id ? object.id : null;
-    if ('population' in object) {
-      label += '\nPopulation: ' + object.population.toFixed(2) + '\n';
-      label += 'addressName' + object.addressName;
+    var label;
+    try {
+      label = object.id;
+      if ('population' in object) {
+        label += '\nPopulation: ' + object.population.toFixed(2) + '\n';
+        label += 'addressName' + object.addressName;
+      }
+      this.setState({ hover: { x, y, hoveredObject: object, label } });
+    } catch(err) {
+      this.setState({ hover: { x, y, hoveredObject: null} });
     }
-    this.setState({ hover: { x, y, hoveredObject: object, label } });
   }
 
   onStyleChange = style => {
@@ -170,6 +175,7 @@ export default class App extends Component {
         >
           <StaticMap mapStyle={this.state.style} />
         </DeckGL>
+        {/* <Charts {...this.state} /> */}
       </div>
     );
   }
