@@ -7,8 +7,9 @@ import {
   GEOM_CONTROLS
 } from './controls';
 import DeckGL from 'deck.gl';
-import hexCorePromise from './data/hexCore';
-import chomeCorePromise from './data/chomeCore';
+// import hexCorePromise from './data/hexCore';
+// import chomeCorePromise from './data/chomeCore';
+import coreDataPromise from './data/coreData';
 import { renderLayers } from './deckgl-layers';
 import HoverCard from './hoverCard';
 
@@ -82,44 +83,42 @@ export default class App extends Component {
 
   // Loads the core data (geometries and primary keys)
   _processData = () => {
-
-    hexCorePromise.then(hexCore => {
-      const points = hexCore.reduce((accu, curr) => {
-        accu.push({
-          position: [Number(curr.lon), Number(curr.lat)],
-          id: Number(curr.hexNum)
+      coreDataPromise('hex').then(hexCore => {
+        const points = hexCore.reduce((accu, curr) => {
+          accu.push({
+            position: [Number(curr.lon), Number(curr.lat)],
+            id: Number(curr.hexNum)
+          });
+          return accu;
+        }, []);
+        const geoms = hexCore.reduce((accu, curr) => {
+          accu.push({
+            polygon: curr.geometry.coordinates,
+            population: curr.totalPopulation,
+            id: curr.hexNum
+          });
+          return accu;
+        }, []);
+        this.setState({
+          points: points,
+          hex_geoms: geoms,
+          agg_info: this.getAggInfo(geoms, ['population'])
         });
-        return accu;
-      }, []);
-      const geoms = hexCore.reduce((accu, curr) => {
-        accu.push({
-          polygon: curr.geometry.coordinates,
-          population: curr.totalPopulation,
-          id: curr.hexNum
+      }, console.error);
+      coreDataPromise('chome').then(core => {
+        const geoms = core.reduce((accu, curr) => {
+          accu.push({
+            polygon: curr.geometry.coordinates,
+            population: curr.totalPopulation,
+            addressName: curr.addressName,
+            id: curr.addressCode,
+          });
+          return accu;
+        }, []);
+        this.setState({
+          chome_geoms: geoms
         });
-        return accu;
-      }, []);
-      this.setState({
-        points: points,
-        hex_geoms: geoms,
-        agg_info: this.getAggInfo(geoms, ['population'])
-      });
-    }, console.error);
-
-    chomeCorePromise.then(chomeCore => {
-      const geoms = chomeCore.reduce((accu, curr) => {
-        accu.push({
-          polygon: curr.geometry.coordinates,
-          population: curr.totalPopulation,
-          addressName: curr.addressName,
-          id: curr.addressCode,
-        });
-        return accu;
-      }, []);
-      this.setState({
-        chome_geoms: geoms
-      });
-    }, console.error);
+      }, console.error);
   };
 
   // Basic info on hover
@@ -147,16 +146,6 @@ export default class App extends Component {
     }
     return (
       <div>
-        {/* {hover.hoveredObject && (
-          <div
-            style={{
-              ...tooltipStyle,
-              transform: `translate(${hover.x}px, ${hover.y}px)`
-            }}
-          >
-            <div>{hover.label}</div>
-          </div>
-        )} */}
         <HoverCard
           hover={this.state.hover}
         /> 

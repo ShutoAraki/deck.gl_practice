@@ -1,0 +1,44 @@
+{
+    "layers": {
+        "default": {
+            "colors": ["#d73027", "#f46d43", "#fdae61", "#fee090", "#ffffbf", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4"],
+            "reverse": "false",
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_NumJobs": {
+            "colors": ["#ffffe510", "#f7fcb920", "#d9f0a350", "#addd8e", "#78c679"],
+            "scale": [0, 0.25, 0.5, 0.9, 1.0],
+            "scaleBy": "percentage",
+            "reverse": false,
+            "type": "normalized",
+            "interpolate": true
+        },
+        "Hex_TimeToTokyo": {
+            "colors": ["#d73027", "#f46d43", "#fdae61", "#fee090", "#ffffbf", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4"],
+            "reverse": true,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeTotalRate": {
+            "colors": ["#d73027", "#f46d43", "#fdae61", "#fee090", "#ffffbf", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4"],
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006, 0.008],
+            "scaleBy": "value",
+            "reverse": true,
+            "type": "normalized",
+            "interpolate": true
+        },
+        "Chome_NoiseMean": {
+            "colors": ["green", "lightGreen", "red"],
+            "reverse": false,
+            "type": "normalized",
+            "interpolate": true
+        },
+        "Hex_NumCompanies": {
+            "colors": "white2red",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        }
+    }
+}

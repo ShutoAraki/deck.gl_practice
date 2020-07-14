@@ -1,27 +1,43 @@
 import { ScatterplotLayer, HexagonLayer, PolygonLayer } from 'deck.gl';
 import DataFrame from 'dataframe-js';
-import { data_format, layerConfig } from './CHANGEME';
 import chroma from 'chroma-js';
+import layerConfig from './data/layerConfig.json';
+import COLORS from './data/layerConfig.json';
+import COLOR_SCHEMES from './data/COLOR_SCHEMES.json';
 
 // Picks the right data from given data type (chome or hex)
 // and colname. Then returns a data Promise object that
 // eventually returns the casted data
 function _loadData(dtype, colname) {
   var data_dir = 'http://127.0.0.1:8081/';
+  console.log(layerConfig);
   if (dtype === 'hex') {
-    data_dir += 'hexData-';
+    data_dir += 'hex_';
   } else if (dtype === 'chome') {
-    data_dir += 'chomeData-';
+    data_dir += 'chome_';
   } else {
     console.error("Invalid data type: " + dtype);
   }
   data_dir += colname + '.csv';
+  console.log("Fetching " + data_dir);
   return DataFrame.fromCSV(data_dir).then(df => {
     const dataRows = df.toArray();
     const fields = df.listColumns();
     const castedData = dataRows.map(r => r.reduce((prev, curr, i) => {
         const field = fields[i];
-        prev[field] = data_format[field](curr);
+        /*
+        try {
+          prev[field] = data_format[field](curr);
+        } catch(err) {
+          prev[field] = Number(curr);
+          if (isNaN(prev[field])) {
+              prev[field] = String(curr);
+          }
+        }
+        */
+        if (!isNaN(Number(curr))) {
+          prev[field] = Number(curr);
+        }
         return prev;
     }, {}));
     return castedData;
@@ -37,8 +53,16 @@ function _t_val(val, std_cutoff=4) {
 function _hexToRgb(hex) {
   var result;
   var alpha = 255;
-  // if alpha channel is included in the stringk
-  if (hex.length === 9) {
+  // It may be some reserverd string
+  if (hex[0] !== '#') {
+    if (Object.keys(COLORS).includes(hex)) {
+      hex = COLORS[hex];
+    } else {
+      console.error("The hex color string " + hex + " does not exist in COLORS.json.");
+    }
+  }
+  // if alpha channel is included in the string
+  if (hex.length === 9) { 
     alpha = Number(hex.slice(hex.length-2)) / 100 * 255;
     const real_hex = hex.slice(0, hex.length-2);
     result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(real_hex);
@@ -55,6 +79,7 @@ function _hexToRgb(hex) {
   } : null;
 }
 
+// Deprecated: You can copy and paste the string from ColorBrewer and make it a JS array
 function _parseColorScheme(color_strs, scale=null) {
   const raw_colors = color_strs.split('\n').map(x => x.replace(/\s+/g,'')).filter(x => x !== "");
   if (raw_colors.length < 2) {
@@ -81,7 +106,14 @@ function _parseColorScheme(color_strs, scale=null) {
 
 function _generateColorDict(layerInfo, min, max) {
   var scale = Object.keys(layerInfo).includes('scale') ? [...layerInfo.scale] : [];
-  const layer_colors = [...layerInfo.colors];
+  var layer_colors;
+  if ((typeof layerInfo.colors === 'string') && (Object.keys(COLOR_SCHEMES).includes(layerInfo.colors))) {
+    layer_colors = [...COLOR_SCHEMES[layerInfo.colors]];
+  } else if (typeof layerInfo.colors === 'string') {
+    console.error("The color scheme " + layerInfo.colors + " does not exist in COLOR_SCHEMES.json.")
+  } else {
+    layer_colors = [...layerInfo.colors];
+  }
   const color_arr = layerInfo.reverse ? layer_colors.reverse() : layer_colors;
   if (color_arr.length < 2) {
     console.error("You need two or more colors specified.");
@@ -181,7 +213,14 @@ function _getColor(d, agg_info, colname, fullname) {
   // const red = layerInfo.interpolate ? (color2.r - color1.r) * t + color1.r : (color1.r + color2.r) / 2;
   // const green = layerInfo.interpolate ? (color2.g - color1.g) * t + color1.g : (color1.g + color2.g) / 2;
   // const blue = layerInfo.interpolate ? (color2.b - color1.b) * t + color1.b : (color1.b + color2.b) / 2;
-  const layer_colors = [...layerInfo.colors];
+  var layer_colors;
+  if ((typeof layerInfo.colors === 'string') && (Object.keys(COLOR_SCHEMES).includes(layerInfo.colors))) {
+    layer_colors = [...COLOR_SCHEMES[layerInfo.colors]];
+  } else if (typeof layerInfo.colors === 'string') {
+    console.error("The color scheme " + layerInfo.colors + " does not exist in COLOR_SCHEMES.json.")
+  } else {
+    layer_colors = [...layerInfo.colors];
+  }
   var bez = chroma.scale(layerInfo.reverse ? layer_colors.reverse() : layer_colors);
   const red = layerInfo.interpolate ? bez(t).rgb()[0] : color1.r;
   const green = layerInfo.interpolate ? bez(t).rgb()[1] : color1.g;

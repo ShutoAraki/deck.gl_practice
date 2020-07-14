@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { mapStylePicker, layerControl } from './style';
-import { COLUMNS } from './CHANGEME';
+import COLUMNS from './data/columns.json';
 
 function _generateGEOM_CONTROLS() {
   const GEOM_CONTROLS = {};
