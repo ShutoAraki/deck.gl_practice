@@ -18,7 +18,7 @@ export default class HoverCard extends Component {
             <div
               style={{
                   ...tooltipStyle,
-                  transform: `translate(${hover.x}px, ${hover.y}px)`
+                  transform: `translate(${hover.x + 30}px, ${hover.y + 30}px)`
               }}>
               {keys.map(key => (
                   <div key={key + obj[key]}>{key}: {obj[key]}</div> 

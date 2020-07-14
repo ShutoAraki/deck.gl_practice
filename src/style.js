@@ -1,7 +1,7 @@
 export const tooltipStyle = {
   position: 'absolute',
   padding: '4px',
-  background: 'rgba(0, 0, 0, 0.8)',
+  background: 'rgba(0, 0, 0, 0.5)',
   color: '#fff',
   maxWidth: '300px',
   fontSize: '10px',
