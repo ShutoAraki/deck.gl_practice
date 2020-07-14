@@ -2,7 +2,7 @@ import { ScatterplotLayer, HexagonLayer, PolygonLayer } from 'deck.gl';
 import DataFrame from 'dataframe-js';
 import chroma from 'chroma-js';
 import layerConfig from './data/layerConfig.json';
-import COLORS from './data/layerConfig.json';
+import COLORS from './data/COLORS.json';
 import COLOR_SCHEMES from './data/COLOR_SCHEMES.json';
 
 // Picks the right data from given data type (chome or hex)
@@ -10,7 +10,6 @@ import COLOR_SCHEMES from './data/COLOR_SCHEMES.json';
 // eventually returns the casted data
 function _loadData(dtype, colname) {
   var data_dir = 'http://127.0.0.1:8081/';
-  console.log(layerConfig);
   if (dtype === 'hex') {
     data_dir += 'hex_';
   } else if (dtype === 'chome') {
