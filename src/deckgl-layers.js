@@ -8,7 +8,7 @@ import COLOR_SCHEMES from './data/COLOR_SCHEMES.json';
 // Picks the right data from given data type (chome or hex)
 // and colname. Then returns a data Promise object that
 // eventually returns the casted data
-function _loadData(dtype, colname) {
+export function loadData(dtype, colname) {
   var data_dir = 'http://127.0.0.1:8081/';
   if (dtype === 'hex') {
     data_dir += 'hex_';
@@ -24,16 +24,6 @@ function _loadData(dtype, colname) {
     const fields = df.listColumns();
     const castedData = dataRows.map(r => r.reduce((prev, curr, i) => {
         const field = fields[i];
-        /*
-        try {
-          prev[field] = data_format[field](curr);
-        } catch(err) {
-          prev[field] = Number(curr);
-          if (isNaN(prev[field])) {
-              prev[field] = String(curr);
-          }
-        }
-        */
         if (!isNaN(Number(curr))) {
           prev[field] = Number(curr);
         }
@@ -170,7 +160,6 @@ function _getColor(d, agg_info, colname, fullname) {
   } else {
     console.error("Invalid layer type: " + layerInfo.type + ". Supported types are 'standardized' and 'normalized'");
   }
-// /*
   // Get the corresponding color range
   const color_marks = Object.keys(colors).sort();
   var color_range = [];
@@ -209,9 +198,6 @@ function _getColor(d, agg_info, colname, fullname) {
   
   const color1 = color_range[0];
   const color2 = color_range[1];
-  // const red = layerInfo.interpolate ? (color2.r - color1.r) * t + color1.r : (color1.r + color2.r) / 2;
-  // const green = layerInfo.interpolate ? (color2.g - color1.g) * t + color1.g : (color1.g + color2.g) / 2;
-  // const blue = layerInfo.interpolate ? (color2.b - color1.b) * t + color1.b : (color1.b + color2.b) / 2;
   var layer_colors;
   if ((typeof layerInfo.colors === 'string') && (Object.keys(COLOR_SCHEMES).includes(layerInfo.colors))) {
     layer_colors = [...COLOR_SCHEMES[layerInfo.colors]];
@@ -224,14 +210,7 @@ function _getColor(d, agg_info, colname, fullname) {
   const red = layerInfo.interpolate ? bez(t).rgb()[0] : color1.r;
   const green = layerInfo.interpolate ? bez(t).rgb()[1] : color1.g;
   const blue = layerInfo.interpolate ? bez(t).rgb()[2] : color1.b;
-// */
-  // const alpha = 255 * (0.8*t + 0.2);
   const alpha = layerInfo.interpolate ? (color2.a - color1.a) * t + color1.a : (color1.a + color2.a) / 2;
-  // const red = 255 / (1 + Math.exp(1.5*normalized));
-  // const green = 255;
-  // const blue = 3;
-  // Sigmoid interpolation for alpha
-  // const alpha = 255 / (1 + Math.exp(-1.5*normalized)) + 50;
   return [red, green, blue, alpha];
 }
 
@@ -252,9 +231,9 @@ function _getLayers(settings, getAggInfo, data, onHover) {
   colnames.map(fullname => {
     const dtype = _getDType(fullname); // hex or chome
     const colname = _getColName(fullname);
-    const newData = _loadData(dtype, colname);
+    const newData = loadData(dtype, colname);
     const dataPromise = newData.then(loadedData => {
-      const rightData = dtype === "hex" ? data.hex_geoms : data.chome_geoms;
+      const rightData = data[dtype + "_geoms"];
       for (var i = 0; i < rightData.length; i++) {
         rightData[i][colname] = loadedData[i][colname];
       }

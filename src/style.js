@@ -4,7 +4,7 @@ export const tooltipStyle = {
   background: 'rgba(0, 0, 0, 0.5)',
   color: '#fff',
   maxWidth: '300px',
-  fontSize: '10px',
+  fontSize: '12px',
   zIndex: 9,
   pointerEvents: 'none'
 };
@@ -46,12 +46,10 @@ export const charts = {
     'ff-clan-web-pro, "Helvetica Neue", Helvetica, sans-serif !important',
   fontSize: '12px',
   lineHeight: 1.833,
-  height: 210,
   padding: '10px',
   position: 'absolute',
   left: 20,
   bottom: 20,
-  width: 500,
   zIndex: 100
 };
 

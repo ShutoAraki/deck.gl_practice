@@ -12,6 +12,7 @@ import DeckGL from 'deck.gl';
 import coreDataPromise from './data/coreData';
 import { renderLayers } from './deckgl-layers';
 import HoverCard from './hoverCard';
+import Charts from './charts';
 
 const INITIAL_VIEW_STATE = {
   longitude: 139.59663852303368,
@@ -132,6 +133,7 @@ export default class App extends Component {
       }
       this.setState({ hover: { x, y, hoveredObject: object, label } });
     } catch(err) {
+      // Hover over some non-objects will result in null hoveredObject
       this.setState({ hover: { x, y, hoveredObject: null} });
     }
   }
@@ -175,7 +177,7 @@ export default class App extends Component {
         >
           <StaticMap mapStyle={this.state.style} />
         </DeckGL>
-        {/* <Charts {...this.state} /> */}
+        <Charts state={this.state} />
       </div>
     );
   }

@@ -21,7 +21,11 @@ export default class HoverCard extends Component {
                   transform: `translate(${hover.x + 30}px, ${hover.y + 30}px)`
               }}>
               {keys.map(key => (
-                  <div key={key + obj[key]}>{key}: {obj[key]}</div> 
+                  <div key={key + obj[key]}>
+                    <div style={{float: "left"}}>{key}</div>:&nbsp;&nbsp;&nbsp;<div style={{float: "right"}}>
+                        {typeof obj[key] === "number" ? obj[key].toFixed(3) : obj[key]}
+                    </div>
+                  </div> 
               ))} 
             </div>
         );
