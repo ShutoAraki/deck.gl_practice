@@ -45,10 +45,10 @@ def splitFromVarList(varList, mappingArea=None):
     # The dict that stores what columns to extract from each dtype
     extractDict = {dtype: [] for dtype in dtypes}
     for varname in varList:
-        dtype = varname.split('_')[0]
+        dtype = varname.split('_')[0].lower()
         colname = ''.join(varname.split('_')[1:]).replace('_', '-') # Make sure no column name contains underbars
+        colname = colname[0].lower() + colname[1:]
         extractDict[dtype].append(colname)
-    print(extractDict)
     # Extract the data
     for dtype, colnames in extractDict.items():
         for colname in colnames:
@@ -66,8 +66,9 @@ def makeShutoMap(varList, mappingArea='in23Wards'):
     dtypes = set(map(lambda x: x.split('_')[0].lower(), varList))
     extractDict = {dtype: [] for dtype in dtypes}
     for varname in varList:
-        dtype = varname.split('_')[0]
+        dtype = varname.split('_')[0].lower()
         colname = ''.join(varname.split('_')[1:]).replace('_', '-') # Make sure no column name contains underbars
+        colname = colname[0].lower() + colname[1:]
         extractDict[dtype].append(colname)
     with open('src/data/columns.json', 'w') as f:
         json.dump(extractDict, f)
@@ -76,7 +77,7 @@ def makeShutoMap(varList, mappingArea='in23Wards'):
 
 
 if __name__ == "__main__":
-    varList = ['hex_numJobs', 'hex_numCompanies', 'hex_crimeTotalRate', 'hex_timeToTokyo', 'chome_noiseMean']
+    varList = ['Hex_NumJobs', 'Hex_NumCompanies', 'Hex_CrimeTotalRate', 'Hex_TimeToTokyo', 'Chome_NoiseMean']
     mappingArea = 'inTokyoMain'
 
     # createCore(['hex', 'chome'], mappingArea)

@@ -1,1 +1,1 @@
-{"hex": ["numJobs", "numCompanies", "crimeTotalRate", "timeToTokyo"], "chome": ["noiseMean"]}
+{"chome": ["noiseMean"], "hex": ["numJobs", "numCompanies", "crimeTotalRate", "timeToTokyo"]}

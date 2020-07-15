@@ -1,4 +1,4 @@
-# Best Basho Visualizer v0.01
+# Best Basho Visualizer v0.02
 
 @author: [Shuto Araki](https://github.com/ShutoAraki)
 
@@ -27,41 +27,33 @@ This command opens the port 8081 and allow other processes to access the csv fil
 
 #### Data format requirements
 
-- The folder needs to contain `hexData-Core.csv` and `chomeData-Core.csv` where geometry files are stored in [`wkt`](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) format. These will be loaded at the beginning and additional columns will be appended.
-
-- All the other csv files need to be splitted into multiple csv files so that each one contains only one column data.
-
-- Each column corresponds to each layer (as long as you specify correct column names in `src/CHANGEME.js`)
-
-- Do not use `_` in any of the column/file names. An underbar `_` is used as the separator between data type (`hex` or `chome`) and column names internally.
+- The folder needs to contain `[data_type]Data-Core.csv` where geometry files are stored in [`wkt`](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) format. (e.g., `hexData-Core.csv` for the `hex` data type.) These will be loaded at the beginning and additional columns will be appended on demand. The data should also contain `in23Wards` and `inTokyoMain` columns whose values are all boolean, indicating whether a given row is in Tokyo 23 wards or not, etc. This setting is modifiable in `main.py`.
 
 ### 3. Start the application
+In `main.py`, specify the columns and area that you would like to explore. The `varList` is a list of names that specify data types and column names separated by `_`. (e.g., `hex_numJobs` for `numJobs` column in `hex` data.) The `mappingArea` variable can be either `'inTokyoMain'` or `'in23Wards'` or `None`. It is by default `None` and shows the entire area in the original data without filtering.
 ```
-npm start
+python main.py
 ```
 It should now be running at [`http://localhost:8080/`](http://localhost:8080/).
 
 ### 4. Customize layers and data
-The `src/CHANGEME.js` file contains all the customizeable configurations in this system.
-
-#### Edit data columns
-Edit `COLUMNS` object to add more columns to visualize. Do not forget to add its format in `data_format` object too. Categorical data is usually of type **[`String`][42]** and numerical data is **[`Number`][44]**
+The `src/data` folder contains all the customizeable JSON configurations in this system.
 
 #### Edit layer configurations
-Edit `layerConfig` object to configure layer colors. The keys are layer names and values are the configuration objects.
+Edit the `src/data/layerConfig.json` file to customize layer colors, scales, and interpolation for a specific layer. The keys are layer names and values are the configuration objects.
 
 Layer names are formatted as `[data_type]_[column_name]` (e.g., `Hex_NumJobs` for `hex` type `numJobs` column) **Currently, only numerical data are supported.** Categorical data are rendered with randomly generated colors.
 
-One layer is formatted as follows:
+A layer "Hex_NumJobs" can be formatted as follows:
 
 ```js
-Hex_NumJobs: {
-    colors: ['#ffffe5', '#f7fcb9', '#d9f0a3', '#addd8e', '#78c679'],
-    scale: [0, 0.25, 0.5, 0.9, 1.0],
-    type: 'normalized',
-    scaleBy: 'percentage',
-    reverse: false,
-    interpolate: true
+"Hex_NumJobs": {
+    "colors": ["#ffffe510", "#f7fcb920", "#d9f0a350", "#addd8e", "#78c679"],
+    "scale": [0, 0.25, 0.5, 0.9, 1.0],
+    "scaleBy": "percentage",
+    "reverse": false,
+    "type": "normalized",
+    "interpolate": true
 }
 ```
 
@@ -69,6 +61,10 @@ Hex_NumJobs: {
 
 - `colors` **[Array][41]** **\*required**
 Each color is represented by its hex code. Opacity for each color can be set by appending two digit number at the end of a hex number. By default, the opacity is set as 100%. (e.g., `#f0241605` is red with 5% opacity.)
+
+You can also specify a color by words. (e.g., `"colors": ["lightBlue", "blue", "red"]`) You can edit `src/data/COLORS.json` to add more reserved keywords.
+
+If it is too much work to specify each color, you can even name your favorite color scheme in `src/data/COLOR_SCHEMES.json`. (e.g., `"colors": "white2red"`)
 
 - `scale` **[Array][41]**
 If provided, the array has to be the same length as the `colors` array so that each value in this array corresponds to each color in the same position.
@@ -85,6 +81,7 @@ If not provided, colors are equally spaced out.
     - `'percentage'` if the provided scaling is by percentage where 0.5 directly corresponds to the mapped value of $t$. (But it does not check if it is actually named 'percentage')
 
 - `reverse` **[boolean][43]** **\*required** - reverses the color scheme if set to `true`
+
 - `interpolate` **[boolean][43]** **\*required** - linearly interpolates across the colors if set to `true`
 
 ## Examples
@@ -93,56 +90,37 @@ The following setting results in the map below.
 
 ### Configuration
 ```js
-// CHANGEME.js
+// layerConfig.json
 
-export const COLUMNS = {
-    hex: 
-       ['categorical',
-        'greenArea',
-        'timeToTokyo',
-        'crimeTotalRate'],
-    chome:
-       ['greenArea']
-};
-
-// String for categorical values
-// Number for numerical values
-export const data_format = {
-    "greenArea": Number,
-    "categorical": String,
-    "timeToTokyo": Number,
-    "crimeTotalRate": Number
-};
-
-export const layerConfig = {
-    layers: {
-        default: {
-            colors: COLOR_SCHEMES.default_blue2red,
-            reverse: false,
-            type: 'standardized',
-            interpolate: true
+{
+    "layers": {
+        "default": {
+            "colors": "default_blue2red",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
         },
-        Hex_GreenArea: {
-            colors: ['#ffffe5', '#f7fcb9', '#d9f0a3', '#addd8e', '#78c679'],
-            scale: [0, 0.25, 0.5, 0.9, 1.0],
-            scaleBy: 'percentage',
-            reverse: false,
-            type: 'standardized',
-            interpolate: false
+        "Hex_GreenArea": {
+            "colors": ["#ffffe5", "#f7fcb9", "#d9f0a3", "#addd8e", "#78c679"],
+            "scale": [0, 0.25, 0.5, 0.9, 1.0],
+            "scaleBy": "percentage",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": false
         },
-        Chome_GreenArea: {
-            colors: COLOR_SCHEMES.white2green,
-            reverse: true,
-            type: 'normalized',
-            interpolate: true
+        "Chome_GreenArea": {
+            "colors": "white2green",
+            "reverse": true,
+            "type": "normalized",
+            "interpolate": true
         },
-        Hex_CrimeTotalRate: {
-            colors: ['#d73027', '#f46d43', '#fdae61', '#fee090', '#ffffbf', '#e0f3f8', '#abd9e9', '#74add1', '#4575b4'],
-            scale: [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006, 0.008],
-            scaleBy: 'value',
-            reverse: true,
-            type: 'normalized',
-            interpolate: true
+        "Hex_CrimeTotalRate": {
+            "colors": ["#d73027", "#f46d43", "#fdae61", "#fee090", "#ffffbf", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4"],
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006, 0.008],
+            "scaleBy": "value",
+            "reverse": true,
+            "type": "normalized",
+            "interpolate": true
         }
     }
 };
