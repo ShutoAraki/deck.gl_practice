@@ -29,6 +29,8 @@ This command opens the port 8081 and allow other processes to access the csv fil
 
 - The folder needs to contain `[data_type]Data-Core.csv` where geometry files are stored in [`wkt`](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) format. (e.g., `hexData-Core.csv` for the `hex` data type.) These will be loaded at the beginning and additional columns will be appended on demand. The data should also contain `in23Wards` and `inTokyoMain` columns whose values are all boolean, indicating whether a given row is in Tokyo 23 wards or not, etc. This setting is modifiable in `main.py`.
 
+- The folder also needs to have the master data files named `[data_type]Data-Master_v003.csv`. Whatever column names that you would like to include need to be inside this dataset.
+
 ### 3. Start the application
 In `main.py`, specify the columns and area that you would like to explore. The `varList` is a list of names that specify data types and column names separated by `_`. (e.g., `Hex_NumJobs` for `numJobs` column in `hex` data. Case insensitive for a data type and the first character of a column name.) The `mappingArea` variable can be either `'inTokyoMain'` or `'in23Wards'` or `None`. It is by default `None` and shows the entire area in the original data without filtering.
 ```
