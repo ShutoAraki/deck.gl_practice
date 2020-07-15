@@ -38,6 +38,16 @@ export const layerControl = {
   backgroundColor: 'rgba(32, 141, 214, 0.8)'
 };
 
+export const chartToggler = {
+  width: 200,
+  position: 'absolute',
+  top: '240px',
+  right: '20px',
+  padding: '20px',
+  zIndex: 100,
+  backgroundColor: 'rgba(32, 141, 214, 0.8)'
+};
+
 export const charts = {
   background: 'white',
   borderRadius: 3,

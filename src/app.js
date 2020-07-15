@@ -13,6 +13,7 @@ import coreDataPromise from './data/coreData';
 import { renderLayers } from './deckgl-layers';
 import HoverCard from './hoverCard';
 import Charts from './charts';
+import chartToggler from './style';
 
 const INITIAL_VIEW_STATE = {
   longitude: 139.59663852303368,
@@ -39,6 +40,7 @@ export default class App extends Component {
       }),
       {}
     ),
+    showChart: true,
     style: 'mapbox://styles/shutoaraki/ckaxlks630p1s1ilbdw4i26no'
   };
 
@@ -120,7 +122,7 @@ export default class App extends Component {
           chome_geoms: geoms
         });
       }, console.error);
-  };
+  }
 
   // Basic info on hover
   _onHover({ x, y, object }) {
@@ -140,10 +142,18 @@ export default class App extends Component {
 
   onStyleChange = style => {
     this.setState({ style });
-  };
+  }
 
   _updateLayerSettings(settings) {
     this.setState({ settings });
+  }
+
+  _toggleChart() {
+    if (this.state.showChart) {
+      this.setState({showChart: false});
+    } else {
+      this.setState({showChart: true});
+    }
   }
 
   render() {
@@ -177,6 +187,7 @@ export default class App extends Component {
         >
           <StaticMap mapStyle={this.state.style} />
         </DeckGL>
+        <button style={chartToggler} onClick={this._toggleChart}>Data Distribution</button>
         <Charts state={this.state} />
       </div>
     );
