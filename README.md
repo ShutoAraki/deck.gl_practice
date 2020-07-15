@@ -30,7 +30,7 @@ This command opens the port 8081 and allow other processes to access the csv fil
 - The folder needs to contain `[data_type]Data-Core.csv` where geometry files are stored in [`wkt`](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) format. (e.g., `hexData-Core.csv` for the `hex` data type.) These will be loaded at the beginning and additional columns will be appended on demand. The data should also contain `in23Wards` and `inTokyoMain` columns whose values are all boolean, indicating whether a given row is in Tokyo 23 wards or not, etc. This setting is modifiable in `main.py`.
 
 ### 3. Start the application
-In `main.py`, specify the columns and area that you would like to explore. The `varList` is a list of names that specify data types and column names separated by `_`. (e.g., `hex_numJobs` for `numJobs` column in `hex` data.) The `mappingArea` variable can be either `'inTokyoMain'` or `'in23Wards'` or `None`. It is by default `None` and shows the entire area in the original data without filtering.
+In `main.py`, specify the columns and area that you would like to explore. The `varList` is a list of names that specify data types and column names separated by `_`. (e.g., `Hex_NumJobs` for `numJobs` column in `hex` data. Case insensitive for a data type and the first character of a column name.) The `mappingArea` variable can be either `'inTokyoMain'` or `'in23Wards'` or `None`. It is by default `None` and shows the entire area in the original data without filtering.
 ```
 python main.py
 ```
@@ -42,7 +42,7 @@ The `src/data` folder contains all the customizeable JSON configurations in this
 #### Edit layer configurations
 Edit the `src/data/layerConfig.json` file to customize layer colors, scales, and interpolation for a specific layer. The keys are layer names and values are the configuration objects.
 
-Layer names are formatted as `[data_type]_[column_name]` (e.g., `Hex_NumJobs` for `hex` type `numJobs` column) **Currently, only numerical data are supported.** Categorical data are rendered with randomly generated colors.
+Layer names are formatted as `[data_type]_[column_name]` (Same as how you specify columns in `main.py`) **Currently, only numerical data are supported.** Categorical data are rendered with randomly generated colors.
 
 A layer "Hex_NumJobs" can be formatted as follows:
 
