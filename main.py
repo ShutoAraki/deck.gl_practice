@@ -73,6 +73,10 @@ def makeShutoMap(varList, mappingArea='in23Wards'):
     with open('src/data/columns.json', 'w') as f:
         json.dump(extractDict, f)
     # Start the process
+    str_DATA_PATH = DATA_PATH.replace(' ', '\ ')
+    command = f"http-server --cors -p 8081 {str_DATA_PATH} &"
+    print("Running the command:", command)
+    subprocess.check_call(command, shell=True)
     subprocess.check_call('npm start', shell=True)
 
 
