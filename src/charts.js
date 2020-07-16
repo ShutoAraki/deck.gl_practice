@@ -1,4 +1,4 @@
-import React, { Component, Suspense, Fragment } from "react";
+import React, { Component } from "react";
 import { charts } from "./style";
 import { loadData } from './deckgl-layers';
 
@@ -155,13 +155,11 @@ export default class Charts extends Component {
           y: Math.log(d.y)
         };
       });
-      console.log(dataList);
       this.setState({selectedData: dataList});
     });
   }
 
   render () {
-    console.log(this.props);
     if (!this.props.state.showChart) {
       return <div></div>
     }

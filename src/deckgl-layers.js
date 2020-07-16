@@ -18,7 +18,6 @@ export function loadData(dtype, colname) {
     console.error("Invalid data type: " + dtype);
   }
   data_dir += colname + '.csv';
-  console.log("Fetching " + data_dir);
   return DataFrame.fromCSV(data_dir).then(df => {
     const dataRows = df.toArray();
     const fields = df.listColumns();

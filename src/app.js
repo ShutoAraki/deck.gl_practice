@@ -13,7 +13,7 @@ import coreDataPromise from './data/coreData';
 import { renderLayers } from './deckgl-layers';
 import HoverCard from './hoverCard';
 import Charts from './charts';
-import chartToggler from './style';
+import ChartToggler from './ChartToggler';
 
 const INITIAL_VIEW_STATE = {
   longitude: 139.59663852303368,
@@ -43,6 +43,11 @@ export default class App extends Component {
     showChart: true,
     style: 'mapbox://styles/shutoaraki/ckaxlks630p1s1ilbdw4i26no'
   };
+
+  constructor(props) {
+    super(props);
+    this._toggleChart = this._toggleChart.bind(this);
+  }
 
   componentDidMount() {
     this._processData();
@@ -187,7 +192,7 @@ export default class App extends Component {
         >
           <StaticMap mapStyle={this.state.style} />
         </DeckGL>
-        <button style={chartToggler} onClick={this._toggleChart}>Data Distribution</button>
+        <ChartToggler toggleChart={this._toggleChart} />
         <Charts state={this.state} />
       </div>
     );

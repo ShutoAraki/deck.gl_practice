@@ -39,13 +39,20 @@ export const layerControl = {
 };
 
 export const chartToggler = {
-  width: 200,
+  borderRadius: 3,
+  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+  fontFamily:
+    'ff-clan-web-pro, "Helvetica Neue", Helvetica, sans-serif !important',
+  fontSize: '12px',
+  fontWeight: 'bold',
+  width: 240,
   position: 'absolute',
-  top: '240px',
+  top: '280px',
   right: '20px',
-  padding: '20px',
+  padding: '10px',
   zIndex: 100,
-  backgroundColor: 'rgba(32, 141, 214, 0.8)'
+  backgroundColor: 'rgba(32, 141, 214, 0.8)',
+  textAlign: 'center'
 };
 
 export const charts = {
