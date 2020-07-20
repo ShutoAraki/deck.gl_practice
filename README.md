@@ -9,6 +9,16 @@ This tool semi-automates the geospatial data exploration process using Mapbox an
 You can pick the data you would like to visualize and this tool immediately fetches the right data and adjust layer schemes to render it in front of you!
 
 ## Getting Started
+
+### 0. Install Node.js and set up your Mapbox Token
+This application uses the Node.js environment. The latest version is recommended. The versions 14.3.0 and 14.5.0 are tested to work. (NPM is 6.14.5 at the time of development.)
+
+You also need a [Mapbox token](https://docs.mapbox.com/help/glossary/access-token/) in order to render a map.
+Set `MapboxAccessToken` environment variable on your computer.
+
+On Mac/Linux, that means running `export MapxboxAccessToken=whatever_token_you_have`.
+On Windows, you can run `set MapboxAccessToken=whatever_token_you_have`.
+
 ### 1. Install dependencies
 ```
 npm install
