@@ -38,6 +38,26 @@ export const layerControl = {
   backgroundColor: 'rgba(32, 141, 214, 0.8)'
 };
 
+export const legendStyle = {
+  borderRadius: 3,
+  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+  fontFamily:
+    'ff-clan-web-pro, "Helvetica Neue", Helvetica, sans-serif !important',
+  fontSize: '12px',
+  fontWeight: 'bold',
+  color: 'white',
+  width: 220,
+  position: 'absolute',
+  top: '340px',
+  right: '20px',
+  padding: '10px',
+  zIndex: 100,
+  maxHeight: 300,
+  overflowX: 'hidden',
+  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  textAlign: 'center'
+};
+
 export const chartToggler = {
   borderRadius: 3,
   boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',

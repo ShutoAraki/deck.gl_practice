@@ -14,6 +14,7 @@ import { renderLayers } from './deckgl-layers';
 import HoverCard from './hoverCard';
 import Charts from './charts';
 import ChartToggler from './ChartToggler';
+import LegendCard from './legends';
 
 const INITIAL_VIEW_STATE = {
   longitude: 139.59663852303368,
@@ -170,7 +171,7 @@ export default class App extends Component {
       <div>
         <HoverCard
           hover={this.state.hover}
-        /> 
+        />
         <MapStylePicker
           onStyleChange={this.onStyleChange}
           currentStyle={this.state.style}
@@ -194,6 +195,9 @@ export default class App extends Component {
         </DeckGL>
         <ChartToggler toggleChart={this._toggleChart} />
         <Charts state={this.state} />
+        <LegendCard
+          settings={this.state.settings}
+        />
       </div>
     );
   }
