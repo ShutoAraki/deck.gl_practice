@@ -28,6 +28,7 @@ export function loadData(dtype, colname) {
         }
         return prev;
     }, {}));
+    console.log(castedData);
     return castedData;
   });
 }

@@ -81,9 +81,17 @@ def makeShutoMap(varList, mappingArea='in23Wards'):
 
 
 if __name__ == "__main__":
-    varList = ['Hex_NumJobs', 'Hex_NumCompanies', 'Hex_CrimeTotalRate', 'Hex_TimeToTokyo', 'Chome_NoiseMean']
-    mappingArea = 'inTokyoMain'
+    varList = ['Hex_NumJobs', 
+               'Hex_NumCompanies',
+               'Hex_CrimeTotalRate',
+               'Hex_TimeToTokyo',
+               'Hex_NoiseMin',
+               'Hex_NoiseMean',
+               'Hex_NoiseMax',
+               'Hex_GreenArea',
+               'Chome_NoiseMean']
+    mappingArea = 'in23Wards'
 
-    # createCore(['hex', 'chome'], mappingArea)
-    # splitFromVarList(varList, mappingArea)
+    #createCore(['hex', 'chome'], mappingArea)
+    #splitFromVarList(varList, mappingArea)
     makeShutoMap(varList, mappingArea)
