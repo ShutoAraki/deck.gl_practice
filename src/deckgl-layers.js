@@ -5,7 +5,6 @@ import chroma from 'chroma-js';
 import layerConfig from './data/layerConfig.json';
 import COLORS from './data/COLORS.json';
 import COLOR_SCHEMES from './data/COLOR_SCHEMES.json';
-import { legendStyle } from './style';
 
 // Picks the right data from given data type (chome or hex)
 // and colname. Then returns a data Promise object that
@@ -269,94 +268,4 @@ export function renderLayers(props) {
   const { data, onHover, settings, getAggInfo } = props;
   const layers = _getLayers(settings, getAggInfo, data, onHover);
   return layers;
-}
-
-// Return an object like this
-// {
-//   "colors": ["#ffffe510", "#f7fcb920", "#d9f0a350", "#addd8e", "#78c679"],
-//   "scale": {
-//     "#ffffe510": 12.42,
-//     "#f7fcb920": 23.32,
-//     ...
-//   }
-// }
-function _getColorRange(fullname, colorRange) {
-  const col = fullname.slice(4)
-  const dtype = _getDType(col); // hex or chome
-  const colname = _getColName(col);
-  const newData = loadData(dtype, colname);
-  return newData.then(loadedData => {
-    const data = loadedData.map(x => x[colname]);
-    const dataMax = Math.max(...data);
-    const dataMin = Math.min(...data);
-    const colConfig = layerConfig.layers[col];
-    var scaleArray;
-    if (colConfig.scaleBy === "value") {
-      scaleArray = colConfig.scale;
-      scaleArray[0] = dataMin;
-      scaleArray[scaleArray.length-1] = dataMax;
-      for (var i = 0; i < scaleArray.length; i++) {
-        colorRange.scale[colorRange.colors[i]] = scaleArray[i];
-      }
-    } else {
-      scaleArray = [];
-    }
-    return colorRange;
-  });
-  
-}
-
-function _getSelectedColumn(settings) {
-    const cols = Object.keys(settings).filter(x => settings[x]);
-    return cols[0];
-}
-
-function _getColorScheme(key) {
-    // Convert showHex_NumJobs to Hex_NumJobs
-    var processedKey = key.slice(4);
-    if (!Object.keys(layerConfig.layers).includes(processedKey)) {
-        processedKey = "default";
-    }
-    return {
-        colors: layerConfig.layers[processedKey].colors,
-    };
-}
-
-function _getColorDivStyle(color) {
-    const processedColor = color[0] !== '#' ? COLORS[color] : color
-    const hexColor = processedColor.slice(0, 7);
-    return {
-        backgroundColor: hexColor,
-        width: 50,
-        height: 20,
-        margin: 5
-    };
-}
-
-export function LegendCard({ settings }) {
-    // Get one selected column
-    const col = _getSelectedColumn(settings);
-    if (!col) {
-        return <div></div>
-    }
-    // Get the color scheme
-    const scheme = _getColorScheme(col);
-    const colors = typeof scheme.colors === 'string' ? COLOR_SCHEMES[scheme.colors] : scheme.colors;
-    var colorRange = {"colors": colors, "scale": {}};
-    const colorRangePromise = _getColorRange(col, colorRange);
-   // Render the colors with the scale
-    return (
-        <div style={legendStyle}>
-        {
-          colorRangePromise.then(colorRange => {
-            colorRange.colors.map(color => (
-              <div style={{height: 30}} key={color}>
-                  <div style={_getColorDivStyle(color)}></div>
-                  <div>&nbsp;&nbsp;&nbsp;{colorRange.scale[color]}</div>
-              </div>
-            ))
-          })
-        }
-        </div>
-    );
 }

@@ -159,7 +159,7 @@ export default class LegendCard extends Component {
             {scheme.map(color => (
                 <div style={{height: 30}} key={color}>
                     <div style={this._getColorDivStyle(color)}></div>
-                    <div style={{float: "right"}}>&nbsp;&nbsp;&nbsp;{this.state.scale[color]}</div>
+                    <div style={{float: "right", margin: "4.5px"}}>&nbsp;&nbsp;&nbsp;{this.state.scale[color]}</div>
                 </div>
             ))}
             </div>

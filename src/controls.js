@@ -150,19 +150,29 @@ export class LayerControls extends Component {
     }
   }
 
-  render() {
-    const { title, settings, propTypes = {} } = this.props;
+  // render() {
+  //   const { settings, propTypes={} } = this.props;
+  //   return (
+  //     <div className="layer-controls" style={layerControl}>
+  //       {Object.keys(settings).map(key => (
+  //         <div key={key}>
+  //           <button className="btn btn-link" value={propTypes[key].value} onClick={e => this._onValueChange(key, e.target.value)}>
+  //             {propTypes[key].displayName}
+  //           </button>
+  //         </div>
+  //       ))}
+  //     </div>
+  //   );
+  // }
 
+  render() {
+    const { settings, propTypes = {} } = this.props;
     return (
       <div className="layer-controls" style={layerControl}>
-        {title && <h4>{title}</h4>}
         {Object.keys(settings).map(key => (
           <div key={key}>
-            <label>{propTypes[key].displayName}</label>
-            <div style={{ display: 'inline-block', float: 'right' }}>
-              {settings[key]}
-            </div>
-            <Setting
+            {/* <label style={{float: 'right'}}>{propTypes[key].displayName}</label> */}
+            <Checkbox
               settingName={key}
               value={settings[key]}
               propType={propTypes[key]}
@@ -190,16 +200,16 @@ const Setting = props => {
   }
 };
 
-const Checkbox = ({ settingName, value, onChange }) => {
+const Checkbox = ({ settingName, value, onChange, propType }) => {
   return (
     <div key={settingName}>
-      <div className="input-group">
+      <div className="input-group" style={{alignContent: 'center', alignItems: 'center'}}>
         <input
           type="checkbox"
           id={settingName}
           checked={value}
           onChange={e => onChange(settingName, e.target.checked)}
-        />
+        /><label style={{margin: '5px'}}>&nbsp;&nbsp;&nbsp;{propType.displayName}</label>
       </div>
     </div>
   );

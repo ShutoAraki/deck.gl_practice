@@ -29,13 +29,15 @@ export const layerControl = {
   position: 'absolute',
   top: '20px',
   right: '20px',
-  padding: '20px',
+  padding: '10px',
   zIndex: 100,
   background: 'white',
-  height: 200,
-  maxHeight: 200,
+  height: 250,
+  maxHeight: 250,
   overflowX: 'hidden',
-  backgroundColor: 'rgba(32, 141, 214, 0.8)'
+  // backgroundColor: 'rgba(32, 141, 214, 0.8)'
+  color: 'white',
+  backgroundColor: 'rgba(0, 0, 0, 0.7)'
 };
 
 export const legendStyle = {
@@ -45,8 +47,7 @@ export const legendStyle = {
     'ff-clan-web-pro, "Helvetica Neue", Helvetica, sans-serif !important',
   fontSize: '12px',
   fontWeight: 'bold',
-  color: 'white',
-  width: 180,
+  width: 200,
   position: 'absolute',
   top: '340px',
   right: '20px',
@@ -56,6 +57,7 @@ export const legendStyle = {
   zIndex: 100,
   maxHeight: 300,
   overflowX: 'hidden',
+  color: 'white',
   backgroundColor: 'rgba(0, 0, 0, 0.7)',
   textAlign: 'center'
 };
@@ -67,13 +69,15 @@ export const chartToggler = {
     'ff-clan-web-pro, "Helvetica Neue", Helvetica, sans-serif !important',
   fontSize: '12px',
   fontWeight: 'bold',
-  width: 240,
+  width: 200,
   position: 'absolute',
   top: '280px',
   right: '20px',
   padding: '10px',
   zIndex: 100,
-  backgroundColor: 'rgba(32, 141, 214, 0.8)',
+  // backgroundColor: 'rgba(32, 141, 214, 0.8)',
+  color: 'white',
+  backgroundColor: 'rgba(0, 0, 0, 0.7)',
   textAlign: 'center'
 };
 
