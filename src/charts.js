@@ -26,7 +26,8 @@ export default class Charts extends Component {
       const colname = selected.split('_')[1][0].toLowerCase() + selected.split('_')[1].slice(1);
       return {"dtype": dtype, "colname": colname};
     } catch(err) {
-      return {"dtype": 'hex', "colname": 'numJobs'};
+      // return {"dtype": 'hex', "colname": 'numJobs'};
+      return null;
     }
   }
 
@@ -73,10 +74,10 @@ export default class Charts extends Component {
   }
 
   render () {
-    if (!this.props.state.showChart) {
+    const info = this._extractTypesColnames(this.props.state);
+    if (!this.props.state.showChart || !info) {
       return <div></div>
     }
-    const info = this._extractTypesColnames(this.props.state);
     this._updateChart(info.dtype, info.colname);
     return (
       <div style={charts}>
