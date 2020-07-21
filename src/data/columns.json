@@ -1,1 +1,1 @@
-{"chome": ["noiseMean"], "hex": ["numJobs", "numCompanies", "crimeTotalRate", "timeToTokyo", "noiseMin", "noiseMean", "noiseMax", "greenArea"]}
+{"hex": ["numJobs", "numCompanies", "crimeTotalRate", "timeToTokyo", "noiseMin", "noiseMean", "noiseMax", "greenArea"], "chome": ["noiseMean"]}

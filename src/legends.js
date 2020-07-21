@@ -12,16 +12,16 @@ export default class LegendCard extends Component {
             selectedColumn: null,
             colors: [],
             scale: {},
-            reversed: false
         };
-    }
+   }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.settings !== prevProps.settings) {
-            const col = this._getSelectedColumn(this.props.settings);
-            this.setState({selectedColumn: col});
-            if (!col) {
-                this._updateScale()
+    componentDidUpdate(prevProps) {
+        const currCol = this._getSelectedColumn(this.props.settings);
+        const prevCol = this._getSelectedColumn(prevProps.settings);
+        if (prevCol !== currCol) {
+            this.setState({selectedColumn: currCol});
+            if (currCol) {
+                this._updateScale(currCol);
             }
         }
     }
@@ -31,16 +31,13 @@ export default class LegendCard extends Component {
         return cols[0];
     }
 
-    _getColorScheme() {
+    _getColorScheme(currCol) {
         // Convert showHex_NumJobs to Hex_NumJobs
-        var processedKey = this.state.selectedColumn.slice(4);
+        // var processedKey = this.state.selectedColumn.slice(4);
+        var processedKey = currCol.slice(4);
         const colConfig = this._getColConfig(processedKey);
         const scheme = colConfig.colors;
         var processedScheme = typeof scheme === 'string' ? COLOR_SCHEMES[scheme] : scheme;
-        // if (colConfig.reverse && !this.state.reversed) {
-        //     processedScheme = processedScheme.reverse();
-        //     this.setState({reversed: true});
-        // }
         return processedScheme;
     }
 
@@ -98,9 +95,10 @@ export default class LegendCard extends Component {
     //     ...
     //   }
     // }
-    _updateScale() {
-        const scheme = this._getColorScheme();
-        const col = this.state.selectedColumn.slice(4);
+    _updateScale(currCol) {
+        const scheme = this._getColorScheme(currCol);
+        // const col = this.state.selectedColumn.slice(4);
+        const col = currCol.slice(4);
         const dtype = this._getDType(col);
         const colname = this._getColName(col);
         const newData = loadData(dtype, colname);
@@ -109,12 +107,7 @@ export default class LegendCard extends Component {
             const dataMax = Math.max(...data);
             const dataMin = Math.min(...data);
             const colConfig = this._getColConfig(col);
-            if (colConfig.reverse && !this.state.reversed) {
-                this.setState({colors: scheme.reverse()});
-                this.setState({reversed: true});
-            } else {
-                this.setState({colors: scheme});
-            }
+            this.setState({colors: scheme});
             var tempScale = {}; // hex color -> scale num mapping
             var scaleArray;
             if (colConfig.scaleBy === "value") {
@@ -141,7 +134,11 @@ export default class LegendCard extends Component {
             }
             const N = scaleArray.length;
             for (var i = 0; i < N; i++) {
-                tempScale[scheme[N-i-1]] = scaleArray[i];
+                if (colConfig.reverse) {
+                    tempScale[scheme[i]] = scaleArray[N-i-1];
+                } else {
+                    tempScale[scheme[i]] = scaleArray[i];
+                }
             }
             this.setState({scale: tempScale});
         });
@@ -150,13 +147,12 @@ export default class LegendCard extends Component {
     render() {
         // Get one selected column
         // const col = this._getSelectedColumn(this.props.settings);
-        const col = this.state.selectedColumn;
-        if (!col) {
+        const currCol = this.state.selectedColumn;
+        if (!currCol) {
             return <div></div>
         }
         // Get the current colors and send it to promise to set the colors state asynchronously
-        const scheme = this._getColorScheme();
-        // this._updateScale(col, scheme);
+        const scheme = this._getColorScheme(currCol);
         // Render the colors with the scale
         return (
             <div style={legendStyle}>
