@@ -21,6 +21,7 @@ export function loadData(dtype, colname) {
   }
   data_dir += colname + '.csv';
   return DataFrame.fromCSV(data_dir).then(df => {
+    console.log("Fetching " + data_dir);
     const dataRows = df.toArray();
     const fields = df.listColumns();
     const castedData = dataRows.map(r => r.reduce((prev, curr, i) => {
@@ -343,19 +344,9 @@ export function LegendCard({ settings }) {
     const colors = typeof scheme.colors === 'string' ? COLOR_SCHEMES[scheme.colors] : scheme.colors;
     var colorRange = {"colors": colors, "scale": {}};
     const colorRangePromise = _getColorRange(col, colorRange);
-    colorRangePromise.then(colorRange => {
-      colorRange.colors.map(color => {
-      });
-    });
    // Render the colors with the scale
     return (
         <div style={legendStyle}>
-        {/* {colorRange.colors.map(color => (
-            <div style={{height: 30}} key={color}>
-                <div style={_getColorDivStyle(color)}></div>
-                <div>&nbsp;&nbsp;&nbsp;{String(colorRange.scale[color])}</div>
-            </div>
-        ))} */}
         {
           colorRangePromise.then(colorRange => {
             colorRange.colors.map(color => (

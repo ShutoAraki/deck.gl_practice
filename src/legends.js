@@ -9,9 +9,21 @@ export default class LegendCard extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            selectedColumn: null,
             colors: [],
-            scale: {}
+            scale: {},
+            reversed: false
         };
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.settings !== prevProps.settings) {
+            const col = this._getSelectedColumn(this.props.settings);
+            this.setState({selectedColumn: col});
+            if (!col) {
+                this._updateScale()
+            }
+        }
     }
 
     _getSelectedColumn(settings) {
@@ -19,16 +31,15 @@ export default class LegendCard extends Component {
         return cols[0];
     }
 
-    _getColorScheme(key) {
+    _getColorScheme() {
         // Convert showHex_NumJobs to Hex_NumJobs
-        var processedKey = key.slice(4);
-        if (!Object.keys(layerConfig.layers).includes(processedKey)) {
-            processedKey = "default";
-        }
-        const scheme = layerConfig.layers[processedKey].colors;
-        var processedScheme = typeof scheme=== 'string' ? COLOR_SCHEMES[scheme] : scheme;
-        // if (layerConfig.layers[processedKey].reverse) {
+        var processedKey = this.state.selectedColumn.slice(4);
+        const colConfig = this._getColConfig(processedKey);
+        const scheme = colConfig.colors;
+        var processedScheme = typeof scheme === 'string' ? COLOR_SCHEMES[scheme] : scheme;
+        // if (colConfig.reverse && !this.state.reversed) {
         //     processedScheme = processedScheme.reverse();
+        //     this.setState({reversed: true});
         // }
         return processedScheme;
     }
@@ -68,6 +79,16 @@ export default class LegendCard extends Component {
         return scaleArray;
     }
 
+    _getColConfig(col) {
+        var key;
+        if (Object.keys(layerConfig.layers).includes(col)) {
+            key = col;
+        } else {
+            key = "default";
+        }
+        return {...layerConfig.layers[key]};
+    }
+
     // Return an object like this
     // {
     //   "colors": ["#ffffe510", "#f7fcb920", "#d9f0a350", "#addd8e", "#78c679"],
@@ -77,18 +98,24 @@ export default class LegendCard extends Component {
     //     ...
     //   }
     // }
-    _updateScale(fullname, scheme) {
-        const col = fullname.slice(4);
+    _updateScale() {
+        const scheme = this._getColorScheme();
+        const col = this.state.selectedColumn.slice(4);
         const dtype = this._getDType(col);
         const colname = this._getColName(col);
         const newData = loadData(dtype, colname);
         newData.then(loadedData => {
-            this.setState({colors: scheme});
             const data = loadedData.map(x => x[colname]);
             const dataMax = Math.max(...data);
             const dataMin = Math.min(...data);
-            const colConfig = layerConfig.layers[col];
-            var tempScale = {};
+            const colConfig = this._getColConfig(col);
+            if (colConfig.reverse && !this.state.reversed) {
+                this.setState({colors: scheme.reverse()});
+                this.setState({reversed: true});
+            } else {
+                this.setState({colors: scheme});
+            }
+            var tempScale = {}; // hex color -> scale num mapping
             var scaleArray;
             if (colConfig.scaleBy === "value") {
                 scaleArray = colConfig.scale;
@@ -112,8 +139,9 @@ export default class LegendCard extends Component {
             } else {
                 console.error("Invalid type: " + colConfig.type);
             }
-            for (var i = 0; i < scaleArray.length; i++) {
-                tempScale[scheme[i]] = scaleArray[i];
+            const N = scaleArray.length;
+            for (var i = 0; i < N; i++) {
+                tempScale[scheme[N-i-1]] = scaleArray[i];
             }
             this.setState({scale: tempScale});
         });
@@ -121,13 +149,14 @@ export default class LegendCard extends Component {
 
     render() {
         // Get one selected column
-        const col = this._getSelectedColumn(this.props.settings);
+        // const col = this._getSelectedColumn(this.props.settings);
+        const col = this.state.selectedColumn;
         if (!col) {
             return <div></div>
         }
-        // Set the current state (colors) 
-        const scheme = this._getColorScheme(col);
-        this._updateScale(col, scheme);
+        // Get the current colors and send it to promise to set the colors state asynchronously
+        const scheme = this._getColorScheme();
+        // this._updateScale(col, scheme);
         // Render the colors with the scale
         return (
             <div style={legendStyle}>
