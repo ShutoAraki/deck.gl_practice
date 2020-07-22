@@ -4,21 +4,19 @@ import COLUMNS from './data/columns.json';
 
 function _generateGEOM_CONTROLS() {
   const GEOM_CONTROLS = {};
-  COLUMNS.hex.map(col_name => {
-    const styledName = col_name[0].toUpperCase() + col_name.slice(1);
-    GEOM_CONTROLS["showHex_" + styledName] = {
-      displayName: 'Hex: ' + styledName,
-      type: 'boolean',
-      value: false
-    };
-  });
-  COLUMNS.chome.map(col_name => {
-    const styledName = col_name[0].toUpperCase() + col_name.slice(1);
-    GEOM_CONTROLS["showChome_" + styledName] = {
-      displayName: 'Chome: ' + styledName,
-      type: 'boolean',
-      value: false
-    };
+  Object.keys(COLUMNS).map(dtype => {
+    COLUMNS[dtype].map(col_info => {
+      const col_name = col_info.split('_')[0];
+      const topic_name = col_info.split('_')[1];
+      const styledType = dtype[0].toUpperCase() + dtype.slice(1);
+      const styledName = col_name[0].toUpperCase() + col_name.slice(1);
+      GEOM_CONTROLS["show" + styledType + "_" + styledName] = {
+        displayName: styledType + ': ' + styledName,
+        type: dtype,
+        topic: typeof topic_name === "undefined" ? "default" : topic_name,
+        value: false
+      };
+    });
   });
   return GEOM_CONTROLS;
 }
@@ -150,23 +148,40 @@ export class LayerControls extends Component {
     }
   }
 
-  // render() {
-  //   const { settings, propTypes={} } = this.props;
-  //   return (
-  //     <div className="layer-controls" style={layerControl}>
-  //       {Object.keys(settings).map(key => (
-  //         <div key={key}>
-  //           <button className="btn btn-link" value={propTypes[key].value} onClick={e => this._onValueChange(key, e.target.value)}>
-  //             {propTypes[key].displayName}
-  //           </button>
-  //         </div>
-  //       ))}
-  //     </div>
-  //   );
+  // Given the settings object like this
+  // {
+  //   "showChome_NoiseMean":
+  //     {
+  //       "displayName": "Chome: NoiseMean",
+  //       "type":"chome",
+  //       "topic":"Environment",
+  //       "value":false
+  //     }
   // }
+  // Return the following (topicName: an array of displayNames)
+  // {
+  //   "Environment": ["Chome: NoiseMean", "Hex: GreenArea"],
+  //   "Crime": ["Hex: TotalCrimeRate"]
+  // }
+  _groupByTopic(settings) {
+    var result = {};
+    Object.keys(settings).map(key => {
+      const topic = settings[key].topic;
+      const name = settings[key].displayName;
+      if (Object.keys(result).includes(topic)) {
+        result[topic].push(name);
+      } else {
+        result[topic] = [name];
+      }
+    });
+    return result;
+  }
 
   render() {
     const { settings, propTypes = {} } = this.props;
+    const topics = this._groupByTopic(settings);
+    console.log(settings);
+    console.log(topics);
     return (
       <div className="layer-controls" style={layerControl}>
         {Object.keys(settings).map(key => (
@@ -191,7 +206,6 @@ const Setting = props => {
     switch (propType.type) {
       case 'range':
         return <Slider {...props} />;
-
       case 'boolean':
         return <Checkbox {...props} />;
       default:

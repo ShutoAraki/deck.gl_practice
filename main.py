@@ -1,13 +1,60 @@
 import json
 import os
 import subprocess
+import pickle
 import pandas as pd
 
 DATA_PATH = os.path.join(os.environ['DATA_PATH'], 'VisMaster')
 
+# ========== Helper functions ========== 
+# Append a path to the DATA_PATH
+def fullPathName(path):
+    return os.path.join(DATA_PATH, path)
+
+# Given a topic name and data type, get its file name
+def getTopicFile(thisTopic, dataType='hexData'):
+    return fullPathName(f"{dataType}-{thisTopic}.csv")
+
+def readPickleFile(filePathName):
+    with open (filePathName, 'rb') as fp:
+        return pickle.load(fp)
+
+def getVariableDict(dataType='hexData'):
+    return readPickleFile(fullPathName('variableLocatorDict.pkl'))[dataType]
+
+def getVariableTopic(thisVariable, dataType='hexData'):
+    thisVariable = thisVariable[0].lower() + thisVariable[1:]
+    variableLocatorDict = getVariableDict(dataType)
+    thisTopic = variableLocatorDict[thisVariable] if thisVariable in list(variableLocatorDict.keys()) else None
+    return thisTopic
+
+def getVariableFile(thisVariable, dataType='hexData'):
+    thisTopic = getVariableTopic(thisVariable, dataType)
+    if thisTopic == None:
+        print(f"Variable '{thisVariable}' not found in master data")
+        return None
+    else:
+        return getTopicFile(thisTopic, dataType)
+
+def getVariableList(dataType='hexData'):
+    variableLocatorDict = getVariableDict(dataType)
+    return list(variableLocatorDict.keys())
+
+def getVariablesByTopic(dataType='hexData'):
+    variableLocatorDict = getVariableDict(dataType)
+    variablesByTopic = {thisTopic:[k for k,v in variableLocatorDict.items() if v == thisTopic] for thisTopic in list(set(variableLocatorDict.values()))}
+    return variablesByTopic
+
+def getTopicList(dataType='hexData'):
+    return list(set(getVariableDict(dataType).values()))
+
+def getVariablesForTopic(thisTopic, dataType='hexData'):
+    variableLocatorDict = getVariableDict(dataType)
+    return [k for k,v in variableLocatorDict.items() if v == thisTopic]
+
 def createCore(dtypes, mappingArea=None):
     for dtype in dtypes:
-        core = pd.read_csv(os.path.join(DATA_PATH, f"{dtype}Data-Core.csv"))
+        core = pd.read_csv(fullPathName(f"{dtype}Data-Core.csv"))
         if dtype == 'chome':
             core = core.loc[core.lowestLevel]
         # Filter by mapping area
@@ -29,7 +76,7 @@ def splitFromVarList(varList, mappingArea=None):
     dtypes = set(map(lambda x: x.split('_')[0].lower(), varList))
     masterDataDict = {}
     for dtype in dtypes:
-        masterDataDict[dtype] = pd.read_csv(os.path.join(DATA_PATH, f"{dtype}Data-Master_v003d.csv")).fillna('')
+        masterDataDict[dtype] = pd.read_csv(fullPathName(f"master-{dtype}.csv")).fillna('')
         # Filter by lowest level first
         if dtype == 'chome':
             masterDataDict[dtype] = masterDataDict[dtype].loc[masterDataDict[dtype].lowestLevel]
@@ -52,7 +99,7 @@ def splitFromVarList(varList, mappingArea=None):
     # Extract the data
     for dtype, colnames in extractDict.items():
         for colname in colnames:
-            fullname = os.path.join(DATA_PATH, f"{dtype}_{colname}.csv")
+            fullname = fullPathName(f"{dtype}_{colname}.csv") 
             data = masterDataDict[dtype].loc[:, colname]
             print(f"Processing {colname} of {dtype} type with the shape {data.shape}...")
             data.to_csv(fullname, index=False)
@@ -69,15 +116,17 @@ def makeShutoMap(varList, mappingArea='in23Wards'):
         dtype = varname.split('_')[0].lower()
         colname = ''.join(varname.split('_')[1:]).replace('_', '-') # Make sure no column name contains underbars
         colname = colname[0].lower() + colname[1:]
-        extractDict[dtype].append(colname)
+        topic = getVariableTopic(colname)
+        extractDict[dtype].append(f"{colname}_{topic}")
+    print(extractDict)
     with open('src/data/columns.json', 'w') as f:
         json.dump(extractDict, f)
     # Start the process
     str_DATA_PATH = DATA_PATH.replace(' ', '\ ')
     command = f"http-server --cors -p 8081 {str_DATA_PATH} &"
     print("Running the command:", command)
-    subprocess.check_call(command, shell=True)
-    subprocess.check_call('npm start', shell=True)
+    # subprocess.check_call(command, shell=True)
+    # subprocess.check_call('npm start', shell=True)
 
 
 if __name__ == "__main__":
@@ -93,5 +142,5 @@ if __name__ == "__main__":
     mappingArea = 'in23Wards'
 
     #createCore(['hex', 'chome'], mappingArea)
-    #splitFromVarList(varList, mappingArea)
+    # splitFromVarList(varList, mappingArea)
     makeShutoMap(varList, mappingArea)
