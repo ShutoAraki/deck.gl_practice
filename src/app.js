@@ -41,7 +41,7 @@ export default class App extends Component {
       }),
       {}
     ),
-    showChart: true,
+    showChart: false,
     style: 'mapbox://styles/shutoaraki/ckaxlks630p1s1ilbdw4i26no'
   };
 

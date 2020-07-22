@@ -134,8 +134,16 @@ export function MapStylePicker({ currentStyle, onStyleChange }) {
 }
 
 export class LayerControls extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedTopics: []
+    }
+  }
+
   _onValueChange(settingName, newValue) {
     const { settings } = this.props;
+
     // Only update if we have a confirmed change
     if (settings[settingName].value !== newValue) {
       // Create a new object so that shallow-equal detects a change
@@ -146,8 +154,13 @@ export class LayerControls extends Component {
           value: newValue
         }
       };
-
       this.props.onChange(newSettings);
+
+      // Update the selectedTopics
+      const topics = Object.keys(newSettings)
+                           .filter(x => newSettings[x].value)
+                           .map(x => newSettings[x].topic);
+      this.setState({selectedTopics: topics});
     }
   }
 
@@ -180,27 +193,77 @@ export class LayerControls extends Component {
     return result;
   }
 
+  _accordionButtonStyle(topic) {
+    if (this.state.selectedTopics.includes(topic)) {
+      return {
+        color: 'white',
+        fontWeight: 'bold'
+      };
+    } else {
+      return {
+        color: '#D3D3D3'
+      };
+    }
+  }
+
+  removeA(arr) {
+    var what, a = arguments, L = a.length, ax;
+    while (L > 1 && arr.length) {
+        what = a[--L];
+        while ((ax= arr.indexOf(what)) !== -1) {
+            arr.splice(ax, 1);
+        }
+    }
+    return arr;
+  }
+
+  _toggleTopicSelection(topic) {
+    const colsSelected = Object.keys(this.props.settings)
+                               .filter(x => this.props.settings[x].value)
+                               .filter(x => this.props.settings[x].topic === topic);
+    // Remove only if no checkbox is selected
+    if (this.state.selectedTopics.includes(topic) && colsSelected.length === 0) {
+      const removedArray = this.removeA(this.state.selectedTopics, topic);
+      this.setState({selectedTopics: removedArray});
+    } else if (colsSelected.length !== 0) {
+      this.setState(prevState => ({
+        selectedTopics: [...prevState.selectedTopics, topic]
+      }));
+    }
+  }
+
   render() {
     const { settings, propTypes = {} } = this.props;
     const topics = this._groupByTopic(settings);
-    console.log(topics);
     return (
-      <div className="layer-controls" style={layerControl}>
+      <div className="layer-controls" style={layerControl} id="accordion">
         {Object.keys(topics).map(topic => (
           <div key={topic}>
-            <h2>{topic}</h2>
-            {Object.keys(settings).filter(x => settings[x].topic === topic).map(key => (
-              <div key={key}>
-                {/* <label style={{float: 'right'}}>{propTypes[key].displayName}</label> */}
-                <Checkbox
-                  settingName={key}
-                  value={settings[key].value}
-                  topic={settings[key].topic}
-                  propType={propTypes[key]}
-                  onChange={this._onValueChange.bind(this)}
-                />
-              </div>
-            ))}
+            <button
+              style={this._accordionButtonStyle(topic)}
+              className="btn dropdown-toggle"
+              data-toggle="collapse"
+              data-target={"#collapse" + topic}
+              aria-expanded="true"
+              aria-controls={"collapse" + topic}
+              onClick={() => this._toggleTopicSelection(topic)}
+            >
+                {topic}
+            </button>
+            <div id={"collapse" + topic} className="collapse" aria-labelledby={"heading" + topic} data-parent="#accordion">
+              {Object.keys(settings).filter(x => settings[x].topic === topic).map(key => (
+                <div key={key}>
+                  {/* <label style={{float: 'right'}}>{propTypes[key].displayName}</label> */}
+                  <Checkbox
+                    settingName={key}
+                    value={settings[key].value}
+                    topic={settings[key].topic}
+                    propType={propTypes[key]}
+                    onChange={this._onValueChange.bind(this)}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>
@@ -225,13 +288,15 @@ const Setting = props => {
 const Checkbox = ({ settingName, value, onChange, propType }) => {
   return (
     <div key={settingName}>
-      <div className="input-group" style={{alignContent: 'center', alignItems: 'center'}}>
+      <div className="custom-control custom-switch" style={{alignContent: 'center', alignItems: 'center'}}>
         <input
           type="checkbox"
+          className="custom-control-input"
           id={settingName}
           checked={value}
           onChange={e => onChange(settingName, e.target.checked)}
-        /><label style={{margin: '5px'}}>&nbsp;&nbsp;&nbsp;{propType.displayName}</label>
+        />
+        <label className="custom-control-label" htmlFor={settingName} style={{margin: '5px'}}>{propType.displayName}</label>
       </div>
     </div>
   );
