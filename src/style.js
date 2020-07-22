@@ -27,13 +27,13 @@ export const layerControl = {
   lineHeight: 1.833,
   width: 200,
   position: 'absolute',
-  top: '20px',
+  top: '70px',
   right: '20px',
   padding: '10px',
   zIndex: 100,
   background: 'white',
-  height: 250,
-  maxHeight: 250,
+  height: 200,
+  maxHeight: 200,
   overflowX: 'hidden',
   // backgroundColor: 'rgba(32, 141, 214, 0.8)'
   color: 'white',
@@ -63,20 +63,28 @@ export const legendStyle = {
 };
 
 export const chartToggler = {
-  borderRadius: 3,
   boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-  fontFamily:
-    'ff-clan-web-pro, "Helvetica Neue", Helvetica, sans-serif !important',
-  fontSize: '12px',
-  fontWeight: 'bold',
+  fontSize: '1rem',
   width: 200,
   position: 'absolute',
   top: '280px',
   right: '20px',
-  padding: '10px',
+  padding: '5px',
   zIndex: 100,
   // backgroundColor: 'rgba(32, 141, 214, 0.8)',
   color: 'white',
+  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  textAlign: 'center',
+};
+
+export const dtypeSelector = {
+  borderRadius: 3,
+  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+  width: 200,
+  position: 'absolute',
+  top: '20px',
+  right: '20px',
+  zIndex: 100,
   backgroundColor: 'rgba(0, 0, 0, 0.7)',
   textAlign: 'center'
 };

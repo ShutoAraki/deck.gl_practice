@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { mapStylePicker, layerControl } from './style';
+import { mapStylePicker, layerControl, dtypeSelector} from './style';
 import COLUMNS from './data/columns.json';
 
 function _generateGEOM_CONTROLS() {
@@ -206,6 +206,11 @@ export class LayerControls extends Component {
     }
   }
 
+  _getDtypes(settings) {
+    const dtypes = Object.keys(settings).map(x => settings[x].type);
+    return [... new Set(dtypes)];
+  }
+
   removeA(arr) {
     var what, a = arguments, L = a.length, ax;
     while (L > 1 && arr.length) {
@@ -235,41 +240,62 @@ export class LayerControls extends Component {
   render() {
     const { settings, propTypes = {} } = this.props;
     const topics = this._groupByTopic(settings);
+    const dtypes = this._getDtypes(settings);
     return (
-      <div className="layer-controls" style={layerControl} id="accordion">
-        {Object.keys(topics).map(topic => (
-          <div key={topic}>
-            <button
-              style={this._accordionButtonStyle(topic)}
-              className="btn dropdown-toggle"
-              data-toggle="collapse"
-              data-target={"#collapse" + topic}
-              aria-expanded="true"
-              aria-controls={"collapse" + topic}
-              onClick={() => this._toggleTopicSelection(topic)}
-            >
-                {topic}
-            </button>
-            <div id={"collapse" + topic} className="collapse" aria-labelledby={"heading" + topic} data-parent="#accordion">
-              {Object.keys(settings).filter(x => settings[x].topic === topic).map(key => (
-                <div key={key}>
-                  {/* <label style={{float: 'right'}}>{propTypes[key].displayName}</label> */}
-                  <Checkbox
-                    settingName={key}
-                    value={settings[key].value}
-                    topic={settings[key].topic}
-                    propType={propTypes[key]}
-                    onChange={this._onValueChange.bind(this)}
-                  />
-                </div>
-              ))}
+      <div>
+        <DtypeSelector
+          dtypes={dtypes}
+        />
+        <div className="layer-controls" style={layerControl} id="accordion">
+          {Object.keys(topics).map(topic => (
+            <div key={topic}>
+              <button
+                style={this._accordionButtonStyle(topic)}
+                className="btn dropdown-toggle"
+                data-toggle="collapse"
+                data-target={"#collapse" + topic}
+                aria-expanded="true"
+                aria-controls={"collapse" + topic}
+                onClick={() => this._toggleTopicSelection(topic)}
+              >
+                  {topic}
+              </button>
+              <div id={"collapse" + topic} className="collapse" aria-labelledby={"heading" + topic} data-parent="#accordion">
+                {Object.keys(settings).filter(x => settings[x].topic === topic).map(key => (
+                  <div key={key}>
+                    {/* <label style={{float: 'right'}}>{propTypes[key].displayName}</label> */}
+                    <Checkbox
+                      settingName={key}
+                      value={settings[key].value}
+                      topic={settings[key].topic}
+                      propType={propTypes[key]}
+                      onChange={this._onValueChange.bind(this)}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     );
   }
 }
+
+const DtypeSelector = ({ dtypes }) => {
+  return (
+    <div style={dtypeSelector} className="btn-group dropleft">
+      <button style={{color: 'white', height: 40}} className="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Select Dtype
+      </button>
+      <div className="dropdown-menu">
+        {dtypes.map(dtype => (
+          <a className="dropdown-item">{dtype}</a>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const Setting = props => {
   const { propType } = props;
