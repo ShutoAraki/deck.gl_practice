@@ -19,6 +19,15 @@ export default class Charts extends Component {
     };
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.state.settings != prevProps.state.settings) {
+      const info = this._extractTypesColnames(this.props.state);
+      if (info) {
+        this._updateChart(info.dtype, info.colname);
+      }
+    }
+  }
+
   _extractTypesColnames(state) {
     try {
       const selected = Object.keys(state.settings).filter(x => state.settings[x].value)[0];
@@ -78,7 +87,7 @@ export default class Charts extends Component {
     if (!this.props.state.showChart || !info) {
       return <div></div>
     }
-    this._updateChart(info.dtype, info.colname);
+    // this._updateChart(info.dtype, info.colname);
     return (
       <div style={charts}>
         <h2>Histogram of {info.colname} ({info.dtype})</h2>

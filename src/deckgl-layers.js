@@ -227,7 +227,6 @@ function _getColName(str) {
 
 function _getLayers(settings, getAggInfo, data, onHover) {
   const keys = Object.keys(settings).filter(x => settings[x].value);
-  console.log(keys);
   const colnames = keys.map(x => x.slice(4));
   const layers = [];
   colnames.map(fullname => {

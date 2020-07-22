@@ -183,7 +183,6 @@ export class LayerControls extends Component {
   render() {
     const { settings, propTypes = {} } = this.props;
     const topics = this._groupByTopic(settings);
-    console.log(settings);
     return (
       <div className="layer-controls" style={layerControl}>
         {Object.keys(settings).map(key => (
