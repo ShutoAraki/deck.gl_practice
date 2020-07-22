@@ -11,7 +11,7 @@ function _generateGEOM_CONTROLS() {
       const styledType = dtype[0].toUpperCase() + dtype.slice(1);
       const styledName = col_name[0].toUpperCase() + col_name.slice(1);
       GEOM_CONTROLS["show" + styledType + "_" + styledName] = {
-        displayName: styledType + ': ' + styledName,
+        displayName: styledType + ':' + styledName,
         type: dtype,
         topic: typeof topic_name === "undefined" ? "default" : topic_name,
         value: false
@@ -137,7 +137,8 @@ export class LayerControls extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedTopics: []
+      selectedTopics: [],
+      selectedType: null,
     }
   }
 
@@ -237,17 +238,26 @@ export class LayerControls extends Component {
     }
   }
 
+  _selectType(type) {
+    this.setState({selectedType: type});
+  }
+
   render() {
     const { settings, propTypes = {} } = this.props;
     const topics = this._groupByTopic(settings);
     const dtypes = this._getDtypes(settings);
+    console.log(topics);
     return (
       <div>
         <DtypeSelector
           dtypes={dtypes}
+          currentType={this.state.selectedType}
+          selectType={this._selectType.bind(this)}
         />
         <div className="layer-controls" style={layerControl} id="accordion">
-          {Object.keys(topics).map(topic => (
+          {Object.keys(topics)
+                 .filter(x => topics[x].reduce((prev, curr) => prev || curr.toLowerCase().includes(this.state.selectedType), false))
+                 .map(topic => (
             <div key={topic}>
               <button
                 style={this._accordionButtonStyle(topic)}
@@ -261,7 +271,10 @@ export class LayerControls extends Component {
                   {topic}
               </button>
               <div id={"collapse" + topic} className="collapse" aria-labelledby={"heading" + topic} data-parent="#accordion">
-                {Object.keys(settings).filter(x => settings[x].topic === topic).map(key => (
+                {Object.keys(settings)
+                       .filter(x => settings[x].topic === topic)
+                       .filter(x => settings[x].type === this.state.selectedType)
+                       .map(key => (
                   <div key={key}>
                     {/* <label style={{float: 'right'}}>{propTypes[key].displayName}</label> */}
                     <Checkbox
@@ -282,15 +295,15 @@ export class LayerControls extends Component {
   }
 }
 
-const DtypeSelector = ({ dtypes }) => {
+const DtypeSelector = ({ dtypes, currentType, selectType }) => {
   return (
     <div style={dtypeSelector} className="btn-group dropleft">
       <button style={{color: 'white', height: 40}} className="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Select Dtype
+        {currentType ? currentType : "Select Dtype"}
       </button>
       <div className="dropdown-menu">
         {dtypes.map(dtype => (
-          <a className="dropdown-item">{dtype}</a>
+          <a className="dropdown-item" key={dtype} onClick={() => selectType(dtype)}>{dtype}</a>
         ))}
       </div>
     </div>
@@ -322,7 +335,7 @@ const Checkbox = ({ settingName, value, onChange, propType }) => {
           checked={value}
           onChange={e => onChange(settingName, e.target.checked)}
         />
-        <label className="custom-control-label" htmlFor={settingName} style={{margin: '5px'}}>{propType.displayName}</label>
+        <label className="custom-control-label" htmlFor={settingName} style={{margin: '5px'}}>{propType.displayName.split(':')[1]}</label>
       </div>
     </div>
   );
