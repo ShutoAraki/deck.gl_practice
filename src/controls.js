@@ -183,18 +183,24 @@ export class LayerControls extends Component {
   render() {
     const { settings, propTypes = {} } = this.props;
     const topics = this._groupByTopic(settings);
+    console.log(topics);
     return (
       <div className="layer-controls" style={layerControl}>
-        {Object.keys(settings).map(key => (
-          <div key={key}>
-            {/* <label style={{float: 'right'}}>{propTypes[key].displayName}</label> */}
-            <Checkbox
-              settingName={key}
-              value={settings[key].value}
-              topic={settings[key].topic}
-              propType={propTypes[key]}
-              onChange={this._onValueChange.bind(this)}
-            />
+        {Object.keys(topics).map(topic => (
+          <div key={topic}>
+            <h2>{topic}</h2>
+            {Object.keys(settings).filter(x => settings[x].topic === topic).map(key => (
+              <div key={key}>
+                {/* <label style={{float: 'right'}}>{propTypes[key].displayName}</label> */}
+                <Checkbox
+                  settingName={key}
+                  value={settings[key].value}
+                  topic={settings[key].topic}
+                  propType={propTypes[key]}
+                  onChange={this._onValueChange.bind(this)}
+                />
+              </div>
+            ))}
           </div>
         ))}
       </div>
