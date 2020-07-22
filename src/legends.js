@@ -27,7 +27,7 @@ export default class LegendCard extends Component {
     }
 
     _getSelectedColumn(settings) {
-        const cols = Object.keys(settings).filter(x => settings[x]);
+        const cols = Object.keys(settings).filter(x => settings[x].value);
         return cols[0];
     }
 

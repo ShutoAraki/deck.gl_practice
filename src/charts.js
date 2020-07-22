@@ -21,7 +21,7 @@ export default class Charts extends Component {
 
   _extractTypesColnames(state) {
     try {
-      const selected = Object.keys(state.settings).filter(x => state.settings[x])[0];
+      const selected = Object.keys(state.settings).filter(x => state.settings[x].value)[0];
       const dtype = selected.split('_')[0].slice(4).toLowerCase();
       const colname = selected.split('_')[1][0].toLowerCase() + selected.split('_')[1].slice(1);
       return {"dtype": dtype, "colname": colname};

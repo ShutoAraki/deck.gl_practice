@@ -137,11 +137,14 @@ export class LayerControls extends Component {
   _onValueChange(settingName, newValue) {
     const { settings } = this.props;
     // Only update if we have a confirmed change
-    if (settings[settingName] !== newValue) {
+    if (settings[settingName].value !== newValue) {
       // Create a new object so that shallow-equal detects a change
       const newSettings = {
         ...this.props.settings,
-        [settingName]: newValue
+        [settingName]: {
+          ...settings[settingName],
+          value: newValue
+        }
       };
 
       this.props.onChange(newSettings);
@@ -181,7 +184,6 @@ export class LayerControls extends Component {
     const { settings, propTypes = {} } = this.props;
     const topics = this._groupByTopic(settings);
     console.log(settings);
-    console.log(topics);
     return (
       <div className="layer-controls" style={layerControl}>
         {Object.keys(settings).map(key => (
@@ -189,7 +191,8 @@ export class LayerControls extends Component {
             {/* <label style={{float: 'right'}}>{propTypes[key].displayName}</label> */}
             <Checkbox
               settingName={key}
-              value={settings[key]}
+              value={settings[key].value}
+              topic={settings[key].topic}
               propType={propTypes[key]}
               onChange={this._onValueChange.bind(this)}
             />

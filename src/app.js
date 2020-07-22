@@ -37,7 +37,7 @@ export default class App extends Component {
     settings: Object.keys(GEOM_CONTROLS).reduce(
       (accu, key) => ({
         ...accu,
-        [key]: GEOM_CONTROLS[key].value
+        [key]: GEOM_CONTROLS[key]
       }),
       {}
     ),
