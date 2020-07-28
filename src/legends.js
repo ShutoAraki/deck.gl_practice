@@ -4,6 +4,7 @@ import layerConfig from './data/layerConfig.json';
 import COLORS from './data/COLORS.json';
 import COLOR_SCHEMES from './data/COLOR_SCHEMES.json';
 import { loadData } from './deckgl-layers';
+import _ from "lodash";
 
 export default class LegendCard extends Component {
     constructor(props) {
@@ -37,7 +38,7 @@ export default class LegendCard extends Component {
         var processedKey = currCol.slice(4);
         const colConfig = this._getColConfig(processedKey);
         const scheme = colConfig.colors;
-        var processedScheme = typeof scheme === 'string' ? COLOR_SCHEMES[scheme] : scheme;
+        var processedScheme = typeof scheme === 'string' ? _.cloneDeep(COLOR_SCHEMES[scheme]) : _.cloneDeep(scheme);
         return processedScheme;
     }
 
@@ -107,7 +108,7 @@ export default class LegendCard extends Component {
             const dataMax = Math.max(...data);
             const dataMin = Math.min(...data);
             const colConfig = this._getColConfig(col);
-            this.setState({colors: scheme});
+            this.setState({colors: scheme.reverse()});
             var tempScale = {}; // hex color -> scale num mapping
             var scaleArray;
             if (colConfig.scaleBy === "value") {
@@ -135,9 +136,9 @@ export default class LegendCard extends Component {
             const N = scaleArray.length;
             for (var i = 0; i < N; i++) {
                 if (colConfig.reverse) {
-                    tempScale[scheme[i]] = scaleArray[N-i-1];
-                } else {
                     tempScale[scheme[i]] = scaleArray[i];
+                } else {
+                    tempScale[scheme[i]] = scaleArray[N-i-1];
                 }
             }
             console.log(tempScale);
@@ -153,7 +154,8 @@ export default class LegendCard extends Component {
             return <div></div>
         }
         // Get the current colors and send it to promise to set the colors state asynchronously
-        const scheme = this._getColorScheme(currCol);
+        // const scheme = this._getColorScheme(currCol);
+        const scheme = this.state.colors;
         // Render the colors with the scale
         return (
             <div style={legendStyle}>

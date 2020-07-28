@@ -10,6 +10,7 @@
     "chroma-js": "^2.1.0",
     "dataframe-js": "^1.4.3",
     "deck.gl": "^6.2.4",
+    "lodash": "^4.17.19",
     "luma.gl": "^6.2.0",
     "react": "^16.6.1",
     "react-dom": "^16.6.1",
