@@ -1,41 +1,367 @@
 {
     "layers": {
         "default": {
-            "colors": ["#d73027", "#f46d43", "#fdae61", "#fee090", "#ffffbf", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4"],
-            "reverse": true,
+            "colors": "white2red",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeTotalRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeFelonyRobberyRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeFelonyOtherRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeViolentWeaponsRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeViolentAssaultRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeViolentInjuryRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeViolentIntimidationRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeViolentExtortionRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeTheftBurglarySafeRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeTheftBurglaryEmptyHomeRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeTheftBurglaryHomeSleepingRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeTheftBurglaryHomeUnnoticedRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeTheftBurglaryOtherRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeTheftVehicleRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeTheftMotorcycleRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeTheftPickPocketRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeTheftPurseSnatchingRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeTheftBagLiftingRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeTheftOtherRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeOtherMoralIndecencyRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_CrimeOtherOtherRate": {
+            "colors": "white2red",
+            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006],
+            "scaleBy": "value",
+            "reverse": false,
             "type": "standardized",
             "interpolate": true
         },
         "Hex_NumJobs": {
-            "colors": ["#ffffe510", "#f7fcb920", "#d9f0a350", "#addd8e", "#78c679"],
-            "scale": [0, 0.25, 0.5, 0.9, 1.0],
-            "scaleBy": "percentage",
+            "colors": "white2blue",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_NumCompanies": {
+            "colors": "white2blue",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_GreenArea": {
+            "colors": "white2green",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_NoiseMin": {
+            "colors": "white2red",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_NoiseMean": {
+            "colors": "white2red",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_NoiseMax": {
+            "colors": "white2red",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_PercentCommercial": {
+            "colors": "white2blue",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_PercentIndustrial": {
+            "colors": "white2red",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_PercentResidential": {
+            "colors": "white2green",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_MeanPercentLandCoverage": {
+            "colors": "white2purple",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_MeanTotalPercentLandCoverage": {
+            "colors": "white2black",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_ElevationMin": {
+            "colors": "green2brown",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_ElevationMean": {
+            "colors": "green2brown",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_ElevationMax": {
+            "colors": "green2brown",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_SlopeMin": {
+            "colors": "white2red",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_SlopeMean": {
+            "colors": "white2red",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_SlopeMedian": {
+            "colors": "white2red",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_SlopeMax": {
+            "colors": "white2red",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_NumHouseholds": {
+            "colors": "white2green",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_Pop_Total_A": {
+            "colors": "white2green",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_Pop_0-19yr_A": {
+            "colors": "white2green",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_Pop_20-69yr_A": {
+            "colors": "white2green",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_Pop_70yr+_A": {
+            "colors": "white2green",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_Pop_20-29yr_A": {
+            "colors": "white2green",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_Pop_30-44yr_A": {
+            "colors": "white2green",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_Pop_percentForeigners": {
+            "colors": "white2purple",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_Pop_percentChildren": {
+            "colors": "white2green",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_Pop_percentMale": {
+            "colors": "white2green",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_Pop_percentFemale": {
+            "colors": "white2green",
+            "reverse": false,
+            "type": "standardized",
+            "interpolate": true
+        },
+        "Hex_Pop_percent30-44yr": {
+            "colors": "white2green",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
         },
         "Hex_TimeToTokyo": {
-            "colors": ["#d73027", "#f46d43", "#fdae61", "#fee090", "#ffffbf", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4"],
-            "reverse": true,
+            "colors": "rainbow_medTrans",
+            "reverse": false,
             "type": "standardized",
             "interpolate": true
         },
-        "Hex_CrimeTotalRate": {
-            "colors": ["#d73027", "#f46d43", "#fdae61", "#fee090", "#ffffbf", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4"],
-            "scale": [0, 0.0001, 0.0005, 0.001, 0.003, 0.004, 0.005, 0.006, 0.008],
-            "scaleBy": "value",
-            "reverse": true,
-            "type": "normalized",
-            "interpolate": true
-        },
-        "Chome_NoiseMean": {
-            "colors": ["green", "lightGreen", "red"],
-            "reverse": false,
-            "type": "normalized",
-            "interpolate": true
-        },
-        "Hex_NumCompanies": {
-            "colors": "white2red",
+        "Hex_TimeAndCostToTokyo": {
+            "colors": "thermometer_medTrans",
             "reverse": false,
             "type": "standardized",
             "interpolate": true

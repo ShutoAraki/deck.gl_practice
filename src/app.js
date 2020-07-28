@@ -17,9 +17,9 @@ import ChartToggler from './ChartToggler';
 import LegendCard from './legends';
 
 const INITIAL_VIEW_STATE = {
-  longitude: 139.59663852303368,
-  latitude: 35.667929997207324,
-  zoom: 9,
+  longitude: 139.710078,
+  latitude: 35.674613,
+  zoom: 11,
   minZoom: 5,
   maxZoom: 16,
   pitch: 0,
@@ -42,7 +42,7 @@ export default class App extends Component {
       {}
     ),
     showChart: false,
-    style: 'mapbox://styles/shutoaraki/ckaxlks630p1s1ilbdw4i26no'
+    style: 'mapbox://styles/shutoaraki/ckd4e23v80yfs1ipci9rl72mf'
   };
 
   constructor(props) {
@@ -128,6 +128,18 @@ export default class App extends Component {
           chome_geoms: geoms
         });
       }, console.error);
+      // coreDataPromise('network').then(core => {
+      //   const geoms = core.reduce((accu, curr) => {
+      //     accu.push({
+      //       polygon: curr.geometry.coordinates,
+      //       id: curr.networkNum,
+      //     });
+      //     return accu;
+      //   }, []);
+      //   this.setState({
+      //     network_geoms: geoms
+      //   }); 
+      // }, console.error);
   }
 
   // Basic info on hover

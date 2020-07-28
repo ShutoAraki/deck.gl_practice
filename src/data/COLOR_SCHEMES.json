@@ -1,9 +1,19 @@
 {
-    "default_blue2red": ["#d7302710", "#f46d4330", "#fdae6140", "#fee09070", "#ffffbf", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4"],
-    "blue2red": ["#4575b4", "#91bfdb", "#e0f3f8", "#ffffbf", "#fee090", "#fc8d59", "#d73027"],
-    "green2red": ["#1a9850", "#91cf60", "#d9ef8b", "#ffffbf", "#fee08b", "#fc8d59", "#d73027"],
-    "categoricals": ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"],
-    "white2red": ["#ffffb2", "#fed976", "#feb24c", "#fd8d3c", "#fc4e2a", "#e31a1c", "#b10026"],
-    "white2blue": ["#f1eef6", "#d0d1e6", "#a6bddb", "#74a9cf", "#3690c0", "#0570b0", "#034e7b"],
-    "white2green": ["#ffffcc", "#d9f0a3", "#addd8e", "#78c679", "#41ab5d", "#238443", "#005a32"]
+    "categoricals_opaque": ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"],
+    "rainbow_medTrans": ["#8dd3c760", "#ffffb360", "#bebada60", "#fb807260", "#80b1d360", "#fdb46260", "#b3de6960", "#fccde560", "#d9d9d960", "#bc80bd60", "#ccebc560", "#ffed6f60"],
+    "rainbow_opaque": ["#d73027", "#f46d43", "#fdae61", "#fee090", "#ffffbf", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4"],
+    "rainbow_medTrans": ["#d7302760", "#f46d4360", "#fdae6160", "#fee09060", "#ffffbf60", "#e0f3f860", "#abd9e960", "#74add160", "#4575b460"],
+    "rainbow_varTrans": ["#d7302760", "#f46d4360", "#fdae6150", "#fee09040", "#ffffbf30", "#e0f3f840", "#abd9e950", "#74add160", "#4575b460"],
+    "thermometer_opaque": ["#b2182b","#d6604d","#f4a582","#fddbc7","#f7f7f7","#d1e5f0","#92c5de","#4393c3","#2166ac"],
+    "thermometer_medTrans": ["#b2182b60","#d6604d60","#f4a58260","#fddbc760","#f7f7f760","#d1e5f060","#92c5de60","#4393c360","#2166ac60"],
+    "thermometer_varTrans": ["#b2182b60","#d6604d60","#f4a58250","#fddbc740","#f7f7f730","#d1e5f040","#92c5de50","#4393c360","#2166ac60"],
+    "brown2green": ["#8c510a60","#bf812d60","#dfc27d60","#f6e8c360","#c7eae560","#80cdc160","#35978f60","#01665e60"],
+    "green2brown": ["#01665e60","#35978f60","#80cdc160","#c7eae560","#f6e8c360","#dfc27d60","#bf812d60","#8c510a60"],
+    "white2red": ["#fff7ec30","#fee8c840","#fdd49e50","#fdbb8460","#fc8d5960","#ef654860","#d7301f60","#99000060"],
+    "white2blue": ["#f7fbff30","#deebf740","#c6dbef50","#9ecae160","#6baed660","#4292c660","#2171b605","#08459460"],
+    "white2green": ["#f7fcfd30","#e5f5f940","#ccece650","#99d8c960","#66c2a460","#41ae7660","#238b4560","#00582460"],
+    "white2purple": ["#fcfbfd30","#efedf540","#dadaeb50","#bcbddc60","#9e9ac860","#807dba60","#6a51a360","#4a148660"],
+    "white2black": ["#ffffff30","#f0f0f040","#d9d9d950","#bdbdbd60","#96969660","#73737360","#52525260","#25252560"],
+    "blue2red": ["#4575b460", "#91bfdb60", "#e0f3f860", "#ffffbf60", "#fee09060", "#fc8d5960", "#d7302760"],
+    "green2red": ["#1a9850", "#91cf60", "#d9ef8b", "#ffffbf", "#fee08b", "#fc8d59", "#d73027"]
 }

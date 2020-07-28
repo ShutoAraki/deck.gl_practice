@@ -11,14 +11,15 @@ import COLOR_SCHEMES from './data/COLOR_SCHEMES.json';
 // eventually returns the casted data
 export function loadData(dtype, colname) {
   var data_dir = 'http://127.0.0.1:8081/';
+  /*
   if (dtype === 'hex') {
     data_dir += 'hex_';
   } else if (dtype === 'chome') {
     data_dir += 'chome_';
   } else {
     console.error("Invalid data type: " + dtype);
-  }
-  data_dir += colname + '.csv';
+  }*/
+  data_dir += dtype + '_' + colname + '.csv';
   return DataFrame.fromCSV(data_dir).then(df => {
     console.log("Fetching " + data_dir);
     const dataRows = df.toArray();

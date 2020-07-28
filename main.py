@@ -23,6 +23,7 @@ def getVariableDict(dataType='hexData'):
     return readPickleFile(fullPathName('variableLocatorDict.pkl'))[dataType]
 
 def getVariableTopic(thisVariable, dataType='hexData'):
+    thisVariable = thisVariable.replace('-', '_')
     thisVariable = thisVariable[0].lower() + thisVariable[1:]
     variableLocatorDict = getVariableDict(dataType)
     thisTopic = variableLocatorDict[thisVariable] if thisVariable in list(variableLocatorDict.keys()) else None
@@ -74,6 +75,7 @@ def createCore(dtypes, mappingArea=None):
 def splitFromVarList(varList, mappingArea=None):
     # varList name format: "hex_[column-name]"
     dtypes = set(map(lambda x: x.split('_')[0].lower(), varList))
+    '''
     masterDataDict = {}
     for dtype in dtypes:
         masterDataDict[dtype] = pd.read_csv(fullPathName(f"master-{dtype}.csv")).fillna('')
@@ -103,6 +105,44 @@ def splitFromVarList(varList, mappingArea=None):
             data = masterDataDict[dtype].loc[:, colname]
             print(f"Processing {colname} of {dtype} type with the shape {data.shape}...")
             data.to_csv(fullname, index=False)
+    '''
+    # Example:
+    # dataDict = {
+    #     'hex': {
+    #         'Environment': ['percentCommercial', 'percentIndustrial'],
+    #         'Crime': ['crimeTotalRate']
+    #     }
+    dataDict = {dtype: {} for dtype in dtypes}
+    for varname in varList:
+        dtype = varname.split('_')[0].lower()
+        colname = '-'.join(varname.split('_')[1:]) # Make sure no column name contains underbars
+        print(colname)
+        colname = colname[0].lower() + colname[1:]
+        topic = getVariableTopic(colname)
+        if topic in dataDict[dtype].keys():
+            dataDict[dtype][topic].append(colname)
+        else:
+            dataDict[dtype][topic] = [colname]
+
+    primaryKey = {
+        'hex': 'hexNum',
+        'chome': 'addressCode'
+    }
+    for dtype, topicDict in dataDict.items():
+        for topic, cols in topicDict.items():
+            topicFile = getTopicFile(topic, dtype+'Data')
+            data = pd.read_csv(topicFile)
+            filters = pd.read_csv(fullPathName(f"{dtype}_filters.csv"))
+            data = data.merge(filters, on=primaryKey[dtype])
+            if mappingArea == "in23Wards":
+                data = data.loc[data.in23Wards]
+            elif mappingArea == "inTokyoMain":
+                data = data.loc[data.inTokyoMain]
+            # Write to csv for each column
+            for col in cols:
+                print(f"Processing {col} of {dtype} type from topic \"{topic}\" (shape: {data.shape})")
+                thisData = data.loc[:, col.replace('-', '_')]
+                thisData.to_csv(fullPathName(f"{dtype}_{col}.csv"), index=False)
 
 
 def makeShutoMap(varList, mappingArea='in23Wards'):
@@ -118,29 +158,84 @@ def makeShutoMap(varList, mappingArea='in23Wards'):
         colname = colname[0].lower() + colname[1:]
         topic = getVariableTopic(colname)
         extractDict[dtype].append(f"{colname}_{topic}")
-    print(extractDict)
     with open('src/data/columns.json', 'w') as f:
         json.dump(extractDict, f)
     # Start the process
     str_DATA_PATH = DATA_PATH.replace(' ', '\ ')
     command = f"http-server --cors -p 8081 {str_DATA_PATH} &"
     print("Running the command:", command)
-    # subprocess.check_call(command, shell=True)
-    # subprocess.check_call('npm start', shell=True)
+    subprocess.check_call(command, shell=True)
+    subprocess.check_call('npm start', shell=True)
 
 
 if __name__ == "__main__":
-    varList = ['Hex_NumJobs', 
+    # varList = [
+    #     'Hex_Pop_Total_A',
+    #     'Hex_NumJobs', 
+    #     'Hex_NumCompanies',
+    #     'Hex_CrimeTotalRate',
+    #     'Hex_TimeToTokyo',
+    #     'Hex_NoiseMin',
+    #     'Hex_NoiseMean',
+    #     'Hex_NoiseMax',
+    #     'Hex_GreenArea',
+    #     'Chome_NoiseMean',
+    #     'Chome_NumHouseholds',
+    #     'Hex_PercentCommercial',
+    #     'Hex_PercentIndustrial',
+    #     'Hex_PercentResidential',
+    #     'Hex_MeanPercentLandCoverage',
+    #     'Hex_MeanTotalPercentLandCoverage'
+    # ]
+    varList = ['Hex_CrimeTotalRate',
+               'Hex_CrimeFelonyRobberyRate',
+               'Hex_CrimeFelonyOtherRate',
+               'Hex_CrimeViolentWeaponsRate',
+               'Hex_CrimeViolentAssaultRate',
+               'Hex_CrimeViolentInjuryRate',
+               'Hex_CrimeViolentIntimidationRate',
+               'Hex_CrimeViolentExtortionRate',
+               'Hex_CrimeTheftBurglarySafeRate',
+               'Hex_CrimeTheftBurglaryEmptyHomeRate',
+               'Hex_CrimeTheftBurglaryHomeSleepingRate',
+               'Hex_CrimeTheftBurglaryHomeUnnoticedRate',
+               'Hex_CrimeTheftBurglaryOtherRate',
+               'Hex_CrimeTheftVehicleRate',
+               'Hex_CrimeTheftMotorcycleRate',
+               'Hex_CrimeTheftPickPocketRate',
+               'Hex_CrimeTheftPurseSnatchingRate',
+               'Hex_CrimeTheftBagLiftingRate',
+               'Hex_CrimeTheftOtherRate',
+               'Hex_CrimeOtherMoralIndecencyRate',
+               'Hex_CrimeOtherOtherRate',
+               'Hex_NumJobs',
                'Hex_NumCompanies',
-               'Hex_CrimeTotalRate',
-               'Hex_TimeToTokyo',
+               'Hex_GreenArea',
                'Hex_NoiseMin',
                'Hex_NoiseMean',
                'Hex_NoiseMax',
-               'Hex_GreenArea',
+               'Hex_PercentCommercial',
+               'Hex_PercentIndustrial',
+               'Hex_PercentResidential',
+               'Hex_MeanPercentLandCoverage',
+               'Hex_MeanTotalPercentLandCoverage',
+               'Hex_ElevationMin',
+               'Hex_ElevationMean',
+               'Hex_ElevationMax',
+               'Hex_SlopeMin',
+               'Hex_SlopeMean',
+               'Hex_SlopeMedian',
+               'Hex_SlopeMax',
+               'Hex_NumHouseholds',
+               'Hex_TimeToTokyo',
+               'Hex_TimeAndCostToTokyo',
                'Chome_NoiseMean']
     mappingArea = 'in23Wards'
 
-    #createCore(['hex', 'chome'], mappingArea)
-    # splitFromVarList(varList, mappingArea)
+    # print("HEX")
+    # print(getVariableList('hexData'))
+    # print("CHOME")
+    # print(getVariableList('chomeData'))
+    # createCore(['hex', 'chome'], mappingArea)
+    splitFromVarList(varList, mappingArea)
     makeShutoMap(varList, mappingArea)

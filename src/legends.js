@@ -112,8 +112,8 @@ export default class LegendCard extends Component {
             var scaleArray;
             if (colConfig.scaleBy === "value") {
                 scaleArray = colConfig.scale;
-                scaleArray[0] = dataMin;
-                scaleArray[scaleArray.length-1] = dataMax;
+                scaleArray[0] = dataMin.toFixed(3);
+                scaleArray[scaleArray.length-1] = dataMax.toFixed(3);
             } else if (colConfig.type === "standardized") {
                 // Automatic scale if scale is not specified in the layerConfig.json
                 scaleArray = colConfig.scale ? colConfig.scale : this._getAutomaticScale();
@@ -140,6 +140,7 @@ export default class LegendCard extends Component {
                     tempScale[scheme[i]] = scaleArray[i];
                 }
             }
+            console.log(tempScale);
             this.setState({scale: tempScale});
         });
     }

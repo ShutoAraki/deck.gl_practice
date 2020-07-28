@@ -90,30 +90,13 @@ const MAPBOX_DEFAULT_MAPSTYLES = [
   { label: 'Light V9', value: 'mapbox://styles/mapbox/light-v9' },
   { label: 'Dark V9', value: 'mapbox://styles/mapbox/dark-v9' },
   { label: 'Satellite V9', value: 'mapbox://styles/mapbox/satellite-v9' },
-  {
-    label: 'Satellite Streets V10',
-    value: 'mapbox://styles/mapbox/satellite-streets-v10'
-  },
-  {
-    label: 'Navigation Preview Day V4',
-    value: 'mapbox://styles/mapbox/navigation-preview-day-v4'
-  },
-  {
-    label: 'Navitation Preview Night V4',
-    value: 'mapbox://styles/mapbox/navigation-preview-night-v4'
-  },
-  {
-    label: 'Navigation Guidance Day V4',
-    value: 'mapbox://styles/mapbox/navigation-guidance-day-v4'
-  },
-  {
-    label: 'Navigation Guidance Night V4',
-    value: 'mapbox://styles/mapbox/navigation-guidance-night-v4'
-  },
-  {
-    label: "Shuto's Classic",
-    value: 'mapbox://styles/shutoaraki/ckaxlks630p1s1ilbdw4i26no'
-  }
+  { label: 'Satellite Streets V10', value: 'mapbox://styles/mapbox/satellite-streets-v10' },
+  { label: 'Navigation Preview Day V4', value: 'mapbox://styles/mapbox/navigation-preview-day-v4' },
+  { label: 'Navitation Preview Night V4', value: 'mapbox://styles/mapbox/navigation-preview-night-v4' },
+  { label: 'Navigation Guidance Day V4', value: 'mapbox://styles/mapbox/navigation-guidance-day-v4' },
+  { label: 'Navigation Guidance Night V4', value: 'mapbox://styles/mapbox/navigation-guidance-night-v4' },
+  { label: "Shuto's Classic", value: 'mapbox://styles/shutoaraki/ckaxlks630p1s1ilbdw4i26no' },
+  { label: "DataScope Simple", value: 'mapbox://styles/shutoaraki/ckd4e23v80yfs1ipci9rl72mf' }
 ];
 
 export function MapStylePicker({ currentStyle, onStyleChange }) {
@@ -197,12 +180,13 @@ export class LayerControls extends Component {
   _accordionButtonStyle(topic) {
     if (this.state.selectedTopics.includes(topic)) {
       return {
-        color: 'white',
+        color: 'rgba(55, 55, 55, 0.8)',
         fontWeight: 'bold'
       };
     } else {
       return {
-        color: '#D3D3D3'
+        // color: '#D3D3D3'
+        color: 'rgba(55, 55, 55, 0.8)'
       };
     }
   }
@@ -246,7 +230,6 @@ export class LayerControls extends Component {
     const { settings, propTypes = {} } = this.props;
     const topics = this._groupByTopic(settings);
     const dtypes = this._getDtypes(settings);
-    console.log(topics);
     return (
       <div>
         <DtypeSelector
@@ -297,8 +280,8 @@ export class LayerControls extends Component {
 
 const DtypeSelector = ({ dtypes, currentType, selectType }) => {
   return (
-    <div style={dtypeSelector} className="btn-group dropleft">
-      <button style={{color: 'white', height: 40}} className="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <div style={dtypeSelector} className="btn-group dropright">
+      <button className="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         {currentType ? currentType : "Select Dtype"}
       </button>
       <div className="dropdown-menu">
