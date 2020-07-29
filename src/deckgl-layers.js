@@ -254,7 +254,8 @@ function _getLayers(settings, getAggInfo, data, onHover) {
                     getPolygon: d => d.polygon,
                     getElevation: 10,
                     getFillColor: d => _getColor(d, data.agg_info, colname, fullname),
-                    getLineColor: d => _getColor(d, data.agg_info, colname, fullname),
+                    // getLineColor: d => _getColor(d, data.agg_info, colname, fullname),
+                    getLineColor: d => [0, 0, 0, 0],
                     getLineWidth: 0,
                     onHover,
                     ...settings
