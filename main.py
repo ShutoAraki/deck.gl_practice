@@ -23,8 +23,7 @@ def getVariableDict(dataType='hexData'):
     return readPickleFile(fullPathName('variableLocatorDict.pkl'))[dataType]
 
 def getVariableTopic(thisVariable, dataType='hexData'):
-    thisVariable = thisVariable.replace('-', '_')
-    thisVariable = thisVariable[0].lower() + thisVariable[1:]
+    thisVariable = convertColName(thisVariable)
     variableLocatorDict = getVariableDict(dataType)
     thisTopic = variableLocatorDict[thisVariable] if thisVariable in list(variableLocatorDict.keys()) else None
     return thisTopic
@@ -53,6 +52,9 @@ def getVariablesForTopic(thisTopic, dataType='hexData'):
     variableLocatorDict = getVariableDict(dataType)
     return [k for k,v in variableLocatorDict.items() if v == thisTopic]
 
+def convertColName(colname):
+    return colname[0].lower() + colname[1:]
+
 def createCore(dtypes, mappingArea=None):
     for dtype in dtypes:
         core = pd.read_csv(fullPathName(f"{dtype}Data-Core.csv"))
@@ -75,37 +77,6 @@ def createCore(dtypes, mappingArea=None):
 def splitFromVarList(varList, mappingArea=None):
     # varList name format: "hex_[column-name]"
     dtypes = set(map(lambda x: x.split('_')[0].lower(), varList))
-    '''
-    masterDataDict = {}
-    for dtype in dtypes:
-        masterDataDict[dtype] = pd.read_csv(fullPathName(f"master-{dtype}.csv")).fillna('')
-        # Filter by lowest level first
-        if dtype == 'chome':
-            masterDataDict[dtype] = masterDataDict[dtype].loc[masterDataDict[dtype].lowestLevel]
-        # Filter by mapping area
-        if mappingArea == "in23Wards":
-            masterData = masterDataDict[dtype]
-            filteredData = masterData.loc[masterData.in23Wards]
-            masterDataDict[dtype] = filteredData
-        elif mappingArea == "inTokyoMain":
-            masterData = masterDataDict[dtype]
-            filteredData = masterData.loc[masterData.inTokyoMain]
-            masterDataDict[dtype] = filteredData
-    # The dict that stores what columns to extract from each dtype
-    extractDict = {dtype: [] for dtype in dtypes}
-    for varname in varList:
-        dtype = varname.split('_')[0].lower()
-        colname = ''.join(varname.split('_')[1:]).replace('_', '-') # Make sure no column name contains underbars
-        colname = colname[0].lower() + colname[1:]
-        extractDict[dtype].append(colname)
-    # Extract the data
-    for dtype, colnames in extractDict.items():
-        for colname in colnames:
-            fullname = fullPathName(f"{dtype}_{colname}.csv") 
-            data = masterDataDict[dtype].loc[:, colname]
-            print(f"Processing {colname} of {dtype} type with the shape {data.shape}...")
-            data.to_csv(fullname, index=False)
-    '''
     # Example:
     # dataDict = {
     #     'hex': {
@@ -115,10 +86,12 @@ def splitFromVarList(varList, mappingArea=None):
     dataDict = {dtype: {} for dtype in dtypes}
     for varname in varList:
         dtype = varname.split('_')[0].lower()
-        colname = '-'.join(varname.split('_')[1:]) # Make sure no column name contains underbars
-        print(colname)
-        colname = colname[0].lower() + colname[1:]
+        # colname = '-'.join(varname.split('_')[1:]) # Make sure no column name contains underbars
+        # colname = convertColName(colname)
+        colname = '_'.join(varname.split('_')[1:])
+        colname = convertColName(colname)
         topic = getVariableTopic(colname)
+        print(f"{colname}: {topic}")
         if topic in dataDict[dtype].keys():
             dataDict[dtype][topic].append(colname)
         else:
@@ -141,7 +114,7 @@ def splitFromVarList(varList, mappingArea=None):
             # Write to csv for each column
             for col in cols:
                 print(f"Processing {col} of {dtype} type from topic \"{topic}\" (shape: {data.shape})")
-                thisData = data.loc[:, col.replace('-', '_')]
+                thisData = data.loc[:, col]
                 thisData.to_csv(fullPathName(f"{dtype}_{col}.csv"), index=False)
 
 
@@ -154,8 +127,10 @@ def makeShutoMap(varList, mappingArea='in23Wards'):
     extractDict = {dtype: [] for dtype in dtypes}
     for varname in varList:
         dtype = varname.split('_')[0].lower()
-        colname = ''.join(varname.split('_')[1:]).replace('_', '-') # Make sure no column name contains underbars
-        colname = colname[0].lower() + colname[1:]
+        # colname = ''.join(varname.split('_')[1:]).replace('_', '-') # Make sure no column name contains underbars
+        # colname = colname[0].lower() + colname[1:]
+        colname = '_'.join(varname.split('_')[1:])
+        colname = convertColName(colname)
         topic = getVariableTopic(colname)
         extractDict[dtype].append(f"{colname}_{topic}")
     with open('src/data/columns.json', 'w') as f:
@@ -169,25 +144,8 @@ def makeShutoMap(varList, mappingArea='in23Wards'):
 
 
 if __name__ == "__main__":
-    # varList = [
-    #     'Hex_Pop_Total_A',
-    #     'Hex_NumJobs', 
-    #     'Hex_NumCompanies',
-    #     'Hex_CrimeTotalRate',
-    #     'Hex_TimeToTokyo',
-    #     'Hex_NoiseMin',
-    #     'Hex_NoiseMean',
-    #     'Hex_NoiseMax',
-    #     'Hex_GreenArea',
-    #     'Chome_NoiseMean',
-    #     'Chome_NumHouseholds',
-    #     'Hex_PercentCommercial',
-    #     'Hex_PercentIndustrial',
-    #     'Hex_PercentResidential',
-    #     'Hex_MeanPercentLandCoverage',
-    #     'Hex_MeanTotalPercentLandCoverage'
-    # ]
-    varList = ['Hex_CrimeTotalRate',
+    varList = [
+               'Hex_CrimeTotalRate',
                'Hex_CrimeFelonyRobberyRate',
                'Hex_CrimeFelonyOtherRate',
                'Hex_CrimeViolentWeaponsRate',
@@ -227,9 +185,21 @@ if __name__ == "__main__":
                'Hex_SlopeMedian',
                'Hex_SlopeMax',
                'Hex_NumHouseholds',
+               'Hex_Pop_Total_A',
+               'Hex_Pop_0-19yr_A',
+               'Hex_Pop_20-69yr_A',
+               'Hex_Pop_70yr+_A',
+               'Hex_Pop_20-29yr_A',
+               'Hex_Pop_30-44yr_A',
+               'Hex_Pop_percentForeigners',
+               'Hex_Pop_percentChildren',
+               'Hex_Pop_percentMale',
+               'Hex_Pop_percentFemale',
+               'Hex_Pop_percent30-44yr',
                'Hex_TimeToTokyo',
                'Hex_TimeAndCostToTokyo',
-               'Chome_NoiseMean']
+               'Chome_NoiseMean'
+    ]
     mappingArea = 'in23Wards'
 
     # print("HEX")
