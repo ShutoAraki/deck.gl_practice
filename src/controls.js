@@ -238,42 +238,16 @@ export class LayerControls extends Component {
           currentType={this.state.selectedType}
           selectType={this._selectType.bind(this)}
         />
-        <div className="layer-controls" style={layerControl} id="accordion">
-          {Object.keys(topics)
-                 .filter(x => topics[x].reduce((prev, curr) => prev || curr.toLowerCase().includes(this.state.selectedType), false))
-                 .map(topic => (
-            <div key={topic}>
-              <button
-                style={this._accordionButtonStyle(topic)}
-                className="btn dropdown-toggle"
-                data-toggle="collapse"
-                data-target={"#collapse" + topic}
-                aria-expanded="true"
-                aria-controls={"collapse" + topic}
-                onClick={() => this._toggleTopicSelection(topic)}
-              >
-                  {topic}
-              </button>
-              <div id={"collapse" + topic} className="collapse" aria-labelledby={"heading" + topic} data-parent="#accordion">
-                {Object.keys(settings)
-                       .filter(x => settings[x].topic === topic)
-                       .filter(x => settings[x].type === this.state.selectedType)
-                       .map(key => (
-                  <div key={key}>
-                    {/* <label style={{float: 'right'}}>{propTypes[key].displayName}</label> */}
-                    <Checkbox
-                      settingName={key}
-                      value={settings[key].value}
-                      topic={settings[key].topic}
-                      propType={propTypes[key]}
-                      onChange={this._onValueChange.bind(this)}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+        <AccordionMenu
+          topics={topics}
+          selectedType={this.state.selectedType}
+          settings={settings}
+          propTypes={propTypes}
+          onValueChange={this._onValueChange.bind(this)}
+          accordionButtonStyle={this._accordionButtonStyle.bind(this)}
+          toggleTopicSelection={this._toggleTopicSelection.bind(this)}
+        />
+        
       </div>
     );
   }
@@ -293,6 +267,48 @@ const DtypeSelector = ({ dtypes, currentType, selectType }) => {
     </div>
   );
 };
+
+const AccordionMenu = ({ topics, selectedType, settings, propTypes, 
+                         onValueChange, accordionButtonStyle, toggleTopicSelection }) => {
+  return (
+    <div className="layer-controls" style={layerControl} id="accordion">
+      {Object.keys(topics)
+              .filter(x => topics[x].reduce((prev, curr) => prev || curr.toLowerCase().includes(selectedType), false))
+              .map(topic => (
+        <div key={topic}>
+          <button
+            style={accordionButtonStyle(topic)}
+            className="btn dropdown-toggle"
+            data-toggle="collapse"
+            data-target={"#collapse" + topic}
+            aria-expanded="true"
+            aria-controls={"collapse" + topic}
+            onClick={() => toggleTopicSelection(topic)}
+          >
+              {topic}
+          </button>
+          <div id={"collapse" + topic} className="collapse" aria-labelledby={"heading" + topic} data-parent="#accordion">
+            {Object.keys(settings)
+                    .filter(x => settings[x].topic === topic)
+                    .filter(x => settings[x].type === selectedType)
+                    .map(key => (
+              <div key={key}>
+                {/* <label style={{float: 'right'}}>{propTypes[key].displayName}</label> */}
+                <Checkbox
+                  settingName={key}
+                  value={settings[key].value}
+                  topic={settings[key].topic}
+                  propType={propTypes[key]}
+                  onChange={onValueChange}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const Setting = props => {
   const { propType } = props;
