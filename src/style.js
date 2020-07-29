@@ -129,6 +129,13 @@ export const legendStyle = {
   overflowX: 'hidden'
 };
 
+export const logoStyle = {
+  position: 'absolute',
+  bottom: '10px',
+  right: '20px',
+  height: 90
+}
+
 export const charts = {
   background: 'rgba(255, 255, 255, 0.95)',
   borderRadius: 10,

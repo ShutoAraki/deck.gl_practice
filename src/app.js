@@ -15,6 +15,7 @@ import HoverCard from './hoverCard';
 import Charts from './charts';
 import ChartToggler from './ChartToggler';
 import LegendCard from './legends';
+import { Logo } from './logo';
 
 const INITIAL_VIEW_STATE = {
   longitude: 139.710078,
@@ -210,6 +211,7 @@ export default class App extends Component {
         <LegendCard
           settings={this.state.settings}
         />
+        <Logo/>
       </div>
     );
   }
