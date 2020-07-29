@@ -291,7 +291,7 @@
         "Hex_Pop_Total_A": {
             "colors": "white2green",
             "reverse": false,
-            "type": "standardized",
+            "type": "normalized",
             "interpolate": true
         },
         "Hex_Pop_0-19yr_A": {

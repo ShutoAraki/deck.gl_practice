@@ -6,8 +6,9 @@ function _generateGEOM_CONTROLS() {
   const GEOM_CONTROLS = {};
   Object.keys(COLUMNS).map(dtype => {
     COLUMNS[dtype].map(col_info => {
-      const col_name = col_info.split('_')[0];
-      const topic_name = col_info.split('_')[1];
+      const col_arr = col_info.split('_');
+      const col_name = col_arr.slice(0, col_arr.length-1).join('_');
+      const topic_name = col_arr[col_arr.length-1];
       const styledType = dtype[0].toUpperCase() + dtype.slice(1);
       const styledName = col_name[0].toUpperCase() + col_name.slice(1);
       GEOM_CONTROLS["show" + styledType + "_" + styledName] = {

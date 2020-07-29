@@ -30,9 +30,13 @@ export default class Charts extends Component {
 
   _extractTypesColnames(state) {
     try {
+      // e.g., showHex_Total_pop_A
       const selected = Object.keys(state.settings).filter(x => state.settings[x].value)[0];
-      const dtype = selected.split('_')[0].slice(4).toLowerCase();
-      const colname = selected.split('_')[1][0].toLowerCase() + selected.split('_')[1].slice(1);
+      const str_arr = selected.split('_');
+      const dtype = str_arr[0].slice(4).toLowerCase();
+      const name = str_arr.slice(1, str_arr.length).join('_');
+      const colname = name[0].toLowerCase() + name.slice(1);
+      // const colname = selected.split('_')[1][0].toLowerCase() + selected.split('_')[1].slice(1);
       return {"dtype": dtype, "colname": colname};
     } catch(err) {
       // return {"dtype": 'hex', "colname": 'numJobs'};

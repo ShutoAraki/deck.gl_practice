@@ -60,7 +60,8 @@ export default class LegendCard extends Component {
      }
     
     _getColName(str) {
-        const name = str.split('_')[1]; // This is why you can't name your column with _
+        const str_arr = str.split('_');
+        const name = str_arr.slice(1, str_arr.length).join('_');
         return name[0].toLowerCase() + name.slice(1);
     }
 

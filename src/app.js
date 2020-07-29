@@ -10,6 +10,7 @@ import DeckGL from 'deck.gl';
 // import hexCorePromise from './data/hexCore';
 // import chomeCorePromise from './data/chomeCore';
 import coreDataPromise from './data/coreData';
+import columns from './data/columns.json';
 import { renderLayers } from './deckgl-layers';
 import HoverCard from './hoverCard';
 import Charts from './charts';
@@ -34,7 +35,6 @@ export default class App extends Component {
       y: 0,
       hoveredObject: null
     },
-    points: [],
     settings: Object.keys(GEOM_CONTROLS).reduce(
       (accu, key) => ({
         ...accu,
@@ -93,26 +93,32 @@ export default class App extends Component {
 
   // Loads the core data (geometries and primary keys)
   _processData = () => {
-      coreDataPromise('hex').then(hexCore => {
-        const points = hexCore.reduce((accu, curr) => {
-          accu.push({
-            position: [Number(curr.lon), Number(curr.lat)],
-            id: Number(curr.hexNum)
-          });
-          return accu;
-        }, []);
+    const dtypes = Object.keys(columns);
+    dtypes.map(dtype => {
+      coreDataPromise(dtype).then(hexCore => {
         const geoms = hexCore.reduce((accu, curr) => {
           accu.push({
             polygon: curr.geometry.coordinates,
-            population: curr.totalPopulation,
             id: curr.hexNum
           });
           return accu;
         }, []);
         this.setState({
-          points: points,
+          [dtype + "_geoms"]: geoms,
+        });
+      }, console.error);
+    });
+      /*
+      coreDataPromise('hex').then(hexCore => {
+        const geoms = hexCore.reduce((accu, curr) => {
+          accu.push({
+            polygon: curr.geometry.coordinates,
+            id: curr.hexNum
+          });
+          return accu;
+        }, []);
+        this.setState({
           hex_geoms: geoms,
-          agg_info: this.getAggInfo(geoms, ['population'])
         });
       }, console.error);
       coreDataPromise('chome').then(core => {
@@ -129,6 +135,7 @@ export default class App extends Component {
           chome_geoms: geoms
         });
       }, console.error);
+      */
       // coreDataPromise('network').then(core => {
       //   const geoms = core.reduce((accu, curr) => {
       //     accu.push({
@@ -176,10 +183,6 @@ export default class App extends Component {
   }
 
   render() {
-    if (!this.state.points.length) {
-      console.log("Data is empty!");
-      return null;
-    }
     return (
       <div>
         <HoverCard
