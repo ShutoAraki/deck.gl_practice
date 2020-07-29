@@ -93,14 +93,32 @@ export default class App extends Component {
 
   // Loads the core data (geometries and primary keys)
   _processData = () => {
+    const primaryKeys = {
+      'hex': 'hexNum',
+      'chome': 'addressCode'
+    }
     const dtypes = Object.keys(columns);
     dtypes.map(dtype => {
       coreDataPromise(dtype).then(hexCore => {
         const geoms = hexCore.reduce((accu, curr) => {
-          accu.push({
-            polygon: curr.geometry.coordinates,
-            id: curr.hexNum
-          });
+          if (dtype === "chome") {
+            accu.push({
+              polygon: curr.geometry.coordinates,
+              id: curr[primaryKeys[dtype]],
+              addressName: curr.addressName
+            });
+          } else {
+            accu.push({
+              polygon: curr.geometry.coordinates,
+              id: curr[primaryKeys[dtype]],
+            });
+          }
+          // if (dtype === "chome") {
+          //   accu.push({
+          //     addressName: curr.addressName,
+          //     id: curr.addressCode
+          //   });
+          // }
           return accu;
         }, []);
         this.setState({
