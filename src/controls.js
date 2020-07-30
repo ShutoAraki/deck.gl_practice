@@ -86,17 +86,18 @@ export const SCATTERPLOT_CONTROLS = {
 };
 
 const MAPBOX_DEFAULT_MAPSTYLES = [
-  { label: 'Streets V10', value: 'mapbox://styles/mapbox/streets-v10' },
-  { label: 'Outdoors V10', value: 'mapbox://styles/mapbox/outdoors-v10' },
-  { label: 'Light V9', value: 'mapbox://styles/mapbox/light-v9' },
-  { label: 'Dark V9', value: 'mapbox://styles/mapbox/dark-v9' },
-  { label: 'Satellite V9', value: 'mapbox://styles/mapbox/satellite-v9' },
-  { label: 'Satellite Streets V10', value: 'mapbox://styles/mapbox/satellite-streets-v10' },
-  { label: 'Navigation Preview Day V4', value: 'mapbox://styles/mapbox/navigation-preview-day-v4' },
-  { label: 'Navitation Preview Night V4', value: 'mapbox://styles/mapbox/navigation-preview-night-v4' },
-  { label: 'Navigation Guidance Day V4', value: 'mapbox://styles/mapbox/navigation-guidance-day-v4' },
-  { label: 'Navigation Guidance Night V4', value: 'mapbox://styles/mapbox/navigation-guidance-night-v4' },
+  { label: 'Simple Light', value: 'mapbox://styles/mapbox/light-v9' },
+  { label: 'Simple Dark', value: 'mapbox://styles/mapbox/dark-v9' },
+  { label: 'Satellite', value: 'mapbox://styles/mapbox/satellite-streets-v10' },
+  { label: 'Streets', value: 'mapbox://styles/mapbox/streets-v10' },
+  //{ label: 'Outdoors V10', value: 'mapbox://styles/mapbox/outdoors-v10' },
+  //{ label: 'Satellite V9', value: 'mapbox://styles/mapbox/satellite-v9' },
+  { label: 'Street Traffic', value: 'mapbox://styles/mapbox/navigation-preview-day-v4' },
+  // { label: 'Navitation Preview Night V4', value: 'mapbox://styles/mapbox/navigation-preview-night-v4' },
+  // { label: 'Navigation Guidance Day V4', value: 'mapbox://styles/mapbox/navigation-guidance-day-v4' },
+  // { label: 'Navigation Guidance Night V4', value: 'mapbox://styles/mapbox/navigation-guidance-night-v4' },
   { label: "Shuto's Classic", value: 'mapbox://styles/shutoaraki/ckaxlks630p1s1ilbdw4i26no' },
+  // { label: "DataScope Detailed", value: 'mapbox://styles/shutoaraki/ckaxlks630p1s1ilbdw4i26no' },
   { label: "DataScope Simple", value: 'mapbox://styles/shutoaraki/ckd4e23v80yfs1ipci9rl72mf' }
 ];
 

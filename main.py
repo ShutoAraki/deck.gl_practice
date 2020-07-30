@@ -4,7 +4,11 @@ import subprocess
 import pickle
 import pandas as pd
 
-DATA_PATH = os.path.join(os.environ['DATA_PATH'], 'VisMaster')
+DATA_PATH = ""
+if "G:\My Drive" in os.path.dirname(os.path.abspath(__file__)):
+    DATA_PATH = "G:\My Drive\Data\VisMaster"
+else:
+    DATA_PATH = os.path.join(os.environ['DATA_PATH'], 'VisMaster')
 
 # ========== Helper functions ========== 
 # Append a path to the DATA_PATH
@@ -67,9 +71,9 @@ def createCore(dtypes, mappingArea=None):
             core = core.loc[core.inTokyoMain]
         # Get only the essential columns
         if dtype == 'hex':
-            core = core.loc[:, ['hexNum', 'geometry', 'totalPopulation']]
+            core = core.loc[:, ['hexNum', 'geometry']]
         elif dtype == 'chome':
-            core = core.loc[:, ['addressCode', 'addressName', 'geometry', 'totalPopulation', 'landArea']]
+            core = core.loc[:, ['addressCode', 'addressName', 'geometry']]
         print(f"Saving core-{dtype}.csv with the shape of {core.shape}...")
         core.to_csv(os.path.join(DATA_PATH, f"core-{dtype}.csv"), index=False)
 
