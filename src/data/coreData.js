@@ -11,11 +11,11 @@ export default function coreDataPromise(dtype) {
         const dataRows = df.toArray();
         const fields = df.listColumns();
         const format = {
-            hexNum: Number,
             geometry: String,
-            totalPopulation: Number,
+            hexNum: Number,
             addressCode: String,
-            addressName: String
+            addressName: String,
+            edgeNum: Number
         };
         return dataRows.map(r => r.reduce((prev, curr, i) => {
             const field = fields[i];

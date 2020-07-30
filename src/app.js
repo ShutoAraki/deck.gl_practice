@@ -95,12 +95,13 @@ export default class App extends Component {
   _processData = () => {
     const primaryKeys = {
       'hex': 'hexNum',
-      'chome': 'addressCode'
+      'chome': 'addressCode',
+      'network': 'edgeNum'
     }
     const dtypes = Object.keys(columns);
     dtypes.map(dtype => {
-      coreDataPromise(dtype).then(hexCore => {
-        const geoms = hexCore.reduce((accu, curr) => {
+      coreDataPromise(dtype).then(core => {
+        const geoms = core.reduce((accu, curr) => {
           if (dtype === "chome") {
             accu.push({
               polygon: curr.geometry.coordinates,
@@ -113,12 +114,6 @@ export default class App extends Component {
               id: curr[primaryKeys[dtype]],
             });
           }
-          // if (dtype === "chome") {
-          //   accu.push({
-          //     addressName: curr.addressName,
-          //     id: curr.addressCode
-          //   });
-          // }
           return accu;
         }, []);
         this.setState({
@@ -126,46 +121,6 @@ export default class App extends Component {
         });
       }, console.error);
     });
-      /*
-      coreDataPromise('hex').then(hexCore => {
-        const geoms = hexCore.reduce((accu, curr) => {
-          accu.push({
-            polygon: curr.geometry.coordinates,
-            id: curr.hexNum
-          });
-          return accu;
-        }, []);
-        this.setState({
-          hex_geoms: geoms,
-        });
-      }, console.error);
-      coreDataPromise('chome').then(core => {
-        const geoms = core.reduce((accu, curr) => {
-          accu.push({
-            polygon: curr.geometry.coordinates,
-            population: curr.totalPopulation,
-            addressName: curr.addressName,
-            id: curr.addressCode,
-          });
-          return accu;
-        }, []);
-        this.setState({
-          chome_geoms: geoms
-        });
-      }, console.error);
-      */
-      // coreDataPromise('network').then(core => {
-      //   const geoms = core.reduce((accu, curr) => {
-      //     accu.push({
-      //       polygon: curr.geometry.coordinates,
-      //       id: curr.networkNum,
-      //     });
-      //     return accu;
-      //   }, []);
-      //   this.setState({
-      //     network_geoms: geoms
-      //   }); 
-      // }, console.error);
   }
 
   // Basic info on hover

@@ -87,6 +87,7 @@ def splitFromVarList(varList, mappingArea=None):
     #         'Environment': ['percentCommercial', 'percentIndustrial'],
     #         'Crime': ['crimeTotalRate']
     #     }
+    # }
     dataDict = {dtype: {} for dtype in dtypes}
     for varname in varList:
         dtype = varname.split('_')[0].lower()
@@ -118,7 +119,7 @@ def splitFromVarList(varList, mappingArea=None):
             # Write to csv for each column
             for col in cols:
                 print(f"Processing {col} of {dtype} type from topic \"{topic}\" (shape: {data.shape})")
-                thisData = data.loc[:, col]
+                thisData = data.loc[:, col].fillna('')
                 thisData.to_csv(fullPathName(f"{dtype}_{col}.csv"), index=False)
 
 
@@ -210,6 +211,6 @@ if __name__ == "__main__":
     # print(getVariableList('hexData'))
     # print("CHOME")
     # print(getVariableList('chomeData'))
-    # createCore(['hex', 'chome'], mappingArea)
+    createCore(['hex', 'chome'], mappingArea)
     splitFromVarList(varList, mappingArea)
     makeShutoMap(varList, mappingArea)
