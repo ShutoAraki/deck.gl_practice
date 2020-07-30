@@ -160,6 +160,7 @@ export default class LegendCard extends Component {
         // Render the colors with the scale
         return (
             <div style={legendStyle}>
+            <div>{this.state.selectedColumn.split('_').slice(1).join('_')}</div>
             {scheme.map(color => (
                 <div style={{height: 30}} key={color}>
                     <div style={this._getColorDivStyle(color)}></div>
