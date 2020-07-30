@@ -104,6 +104,7 @@ export default class LegendCard extends Component {
         const dtype = this._getDType(col);
         const colname = this._getColName(col);
         const newData = loadData(dtype, colname);
+        const roundDigits = 5;
         newData.then(loadedData => {
             const data = loadedData.map(x => x[colname]);
             const dataMax = Math.max(...data);
@@ -114,14 +115,14 @@ export default class LegendCard extends Component {
             var scaleArray;
             if (colConfig.scaleBy === "value") {
                 scaleArray = colConfig.scale;
-                scaleArray[0] = dataMin.toFixed(3);
-                scaleArray[scaleArray.length-1] = dataMax.toFixed(3);
+                scaleArray[0] = dataMin.toFixed(roundDigits);
+                scaleArray[scaleArray.length-1] = dataMax.toFixed(roundDigits);
             } else if (colConfig.type === "standardized") {
                 // Automatic scale if scale is not specified in the layerConfig.json
                 scaleArray = colConfig.scale ? colConfig.scale : this._getAutomaticScale();
                 // Get the raw number x from standardized num = (x - min) / (max - min)
                 scaleArray = scaleArray.map(num => (
-                    (dataMin + num * (dataMax - dataMin)).toFixed(3)
+                    (dataMin + num * (dataMax - dataMin)).toFixed(roundDigits)
                 ));
             } else if (colConfig.type === "normalized") {
                 scaleArray = colConfig.scale ? colConfig.scale : this._getAutomaticScale();
@@ -129,7 +130,7 @@ export default class LegendCard extends Component {
                 const std = Math.sqrt(data.map(d => Math.pow(d-mean, 2)).reduce((a, b) => a + b) / data.length);
                 // Assuming std_cutoff=4, get x from num = (x - mean) / std / 8 + 0.5
                 scaleArray = scaleArray.map(num => (
-                    (4 * std * (2 * num - 1) + mean).toFixed(3)
+                    (4 * std * (2 * num - 1) + mean).toFixed(roundDigits)
                 ));
             } else {
                 console.error("Invalid type: " + colConfig.type);
@@ -142,7 +143,6 @@ export default class LegendCard extends Component {
                     tempScale[scheme[i]] = scaleArray[N-i-1];
                 }
             }
-            console.log(tempScale);
             this.setState({scale: tempScale});
         });
     }
