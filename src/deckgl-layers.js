@@ -53,7 +53,7 @@ function _hexToRgb(hex) {
     }
   }
   // if alpha channel is included in the string
-  if (hex.length === 9) { 
+  if (hex.length === 9) {
     alpha = Number(hex.slice(hex.length-2)) / 100 * 255;
     const real_hex = hex.slice(0, hex.length-2);
     result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(real_hex);
@@ -96,6 +96,7 @@ function _parseColorScheme(color_strs, scale=null) {
 }
 
 function _generateColorDict(layerInfo, min, max) {
+  // This makes a shallow copy, which may be a problem later
   var scale = Object.keys(layerInfo).includes('scale') ? [...layerInfo.scale] : [];
   var layer_colors;
   if ((typeof layerInfo.colors === 'string') && (Object.keys(COLOR_SCHEMES).includes(layerInfo.colors))) {
@@ -120,13 +121,27 @@ function _generateColorDict(layerInfo, min, max) {
   } else if (scale.length !== color_arr.length) {
     console.error("The scale and colors must have the same number of elements.");
   } else if (layerInfo.scaleBy === 'value') {
-    // For now, replace the first and last items with min and max
-    // TODO: Inform the user with some color scheme
-    scale[0] = min;
-    scale[scale.length-1] = max;
-    // Map raw values to percentage
+    // Replace the first and last items with min and max if the scheme includes the wildcard, otherwise, use the given scale.
+    // Else, reset the max and min based on the scale, so it uses the fixed values when set.
+    if (scale[0] === "X" || scale[0] === "x") {
+        scale[0] = min;
+    } else {
+        min = scale[0];
+    }
+    if (scale[scale.length-1] === "X" || scale[scale.length-1] === "x") {
+        scale[scale.length-1] = max;
+    } else {
+        max = scale[scale.length-1];
+    }
+    // Map raw values to percentage, crop the top and bottom beyond the scale values when specified
     for (var i = 0; i < scale.length; i++) {
-      scale[i] = scale[i] / (max - min) - min / (max - min);
+      scale[i] = (scale[i] - min) / (max - min);
+      if (scale[i] < 0) {
+          scale[i] = 0;
+      }
+      if (scale[i] > 1) {
+          scale[i] = 1;
+      }
     }
   }
   var colors = {};
@@ -146,8 +161,24 @@ function _getColor(d, agg_info, colname, fullname) {
     return [rgbColor.r, rgbColor.g, rgbColor.b, rgbColor.a];
   }
   const layerInfo = Object.keys(layerConfig.layers).includes(fullname) ? layerConfig.layers[fullname] : layerConfig.layers.default;
-  const min = agg_info[colname + '_min'];
-  const max = agg_info[colname + '_max'];
+  var min = agg_info[colname + '_min'];
+  var max = agg_info[colname + '_max'];
+  // Reset the min and max if they are specified in the color scale
+  if (layerInfo.scaleBy === 'value') {
+    var scale = layerInfo.scale
+    if (scale[0].toLowerCase() === "x") {
+        scale[0] = min;
+    } else {
+        min = scale[0];
+    }
+    if (scale[scale.length-1].toLowerCase() === "x") {
+        scale[scale.length-1] = max;
+    } else {
+        max = scale[scale.length-1];
+    }
+  }
+  // Avoid divide by zero issues in extreme cases
+  if (max == min) { max = max + .000001; }
   const colors = _generateColorDict(layerInfo, min, max)
 
   var t;
@@ -159,9 +190,11 @@ function _getColor(d, agg_info, colname, fullname) {
     t = _t_val(normalized);
   } else if (layerInfo.type === 'standardized') {
     t = (d[colname] - min) / (max - min);
+    t = t > 1.0 ? 1.0 : t < 0.0 ? 0.0 : t;
   } else {
     console.error("Invalid layer type: " + layerInfo.type + ". Supported types are 'standardized' and 'normalized'");
   }
+
   // Get the corresponding color range
   const color_marks = Object.keys(colors).sort();
   var color_range = [];
@@ -197,7 +230,7 @@ function _getColor(d, agg_info, colname, fullname) {
       }
     }
   }
-  
+
   const color1 = color_range[0];
   const color2 = color_range[1];
   var layer_colors;

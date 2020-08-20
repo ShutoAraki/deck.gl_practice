@@ -58,7 +58,7 @@ export default class LegendCard extends Component {
          // return str.replace(/([a-z])([A-Z])/g, '$1 $2').split(" ")[0].toLowerCase();
          return str.split('_')[0].toLowerCase();
      }
-    
+
     _getColName(str) {
         const str_arr = str.split('_');
         const name = str_arr.slice(1, str_arr.length).join('_');
@@ -104,19 +104,30 @@ export default class LegendCard extends Component {
         const dtype = this._getDType(col);
         const colname = this._getColName(col);
         const newData = loadData(dtype, colname);
-        const roundDigits = 5;
+        var roundDigits = 3;
         newData.then(loadedData => {
             const data = loadedData.map(x => x[colname]);
             const dataMax = Math.max(...data);
             const dataMin = Math.min(...data);
             const colConfig = this._getColConfig(col);
+            if (dataMax > 100) {
+                roundDigits = 0;
+            } else if (dataMax > 10) {
+                roundDigits = 1;
+            } else if (dataMax > 1) {
+                roundDigits = 2;
+            }
             this.setState({colors: scheme.reverse()});
             var tempScale = {}; // hex color -> scale num mapping
             var scaleArray;
             if (colConfig.scaleBy === "value") {
                 scaleArray = colConfig.scale;
-                scaleArray[0] = dataMin.toFixed(roundDigits);
-                scaleArray[scaleArray.length-1] = dataMax.toFixed(roundDigits);
+                if (scaleArray[0].toLowerCase() === "x") {
+                    scaleArray[0] = dataMin.toFixed(roundDigits);
+                }
+                if (scaleArray[scaleArray.length-1].toLowerCase() === "x") {
+                    scaleArray[scaleArray.length-1] = dataMax.toFixed(roundDigits);
+                }
             } else if (colConfig.type === "standardized") {
                 // Automatic scale if scale is not specified in the layerConfig.json
                 scaleArray = colConfig.scale ? colConfig.scale : this._getAutomaticScale();
@@ -157,17 +168,25 @@ export default class LegendCard extends Component {
         // Get the current colors and send it to promise to set the colors state asynchronously
         // const scheme = this._getColorScheme(currCol);
         const scheme = this.state.colors;
-        // Render the colors with the scale
+        // Render the colors with the scale and the name of the variable
         return (
             <div style={legendStyle}>
-            <div>{this.state.selectedColumn.split('_').slice(1).join('_')}</div>
-            {scheme.map(color => (
-                <div style={{height: 30}} key={color}>
-                    <div style={this._getColorDivStyle(color)}></div>
-                    <div style={{float: "right", margin: "4.5px"}}>&nbsp;&nbsp;&nbsp;{this.state.scale[color]}</div>
-                </div>
-            ))}
-            </div>
+              <div>{this.state.selectedColumn.split('_').slice(1).join('_')}</div>
+              {scheme.map(color => (
+                  <div style={{height: 30}} key={color}>
+                      <div style={{float: "left", margin: "2.5px", textAlign: "right", width: "50px"}}>{this.state.scale[color]}&nbsp;</div>
+                      <div style={{float: "right", margin: "0px"}}><div style={this._getColorDivStyle(color)}></div></div>
+                  </div>
+              ))}
+              </div>
         );
     }
 }
+
+
+// {scheme.map(color => (
+//     <div style={{height: 30}} key={color}>
+//         <div style={this._getColorDivStyle(color)}></div>
+//         <div style={{float: "right", margin: "4.5px"}}>&nbsp;&nbsp;&nbsp;{this.state.scale[color]}</div>
+//     </div>
+// ))}

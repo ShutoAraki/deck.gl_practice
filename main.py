@@ -5,12 +5,17 @@ import pickle
 import pandas as pd
 
 DATA_PATH = ""
+isWindows = False
 if "G:\My Drive" in os.path.dirname(os.path.abspath(__file__)):
+    isWindows = True
     DATA_PATH = "G:\My Drive\Data\VisMaster"
+elif "G:\\.shortcut" in os.path.dirname(os.path.abspath(__file__)):
+    isWindows = True
+    DATA_PATH = "G:\\.shortcut-targets-by-id\\1Hu8XWWree1F54qnzec2mDGSgsK1G5ytE\\Data\\VisMaster"
 else:
     DATA_PATH = os.path.join(os.environ['DATA_PATH'], 'VisMaster')
 
-# ========== Helper functions ========== 
+# ========== Helper functions ==========
 # Append a path to the DATA_PATH
 def fullPathName(path):
     return os.path.join(DATA_PATH, path)
@@ -132,8 +137,6 @@ def makeShutoMap(varList, mappingArea='in23Wards'):
     extractDict = {dtype: [] for dtype in dtypes}
     for varname in varList:
         dtype = varname.split('_')[0].lower()
-        # colname = ''.join(varname.split('_')[1:]).replace('_', '-') # Make sure no column name contains underbars
-        # colname = colname[0].lower() + colname[1:]
         colname = '_'.join(varname.split('_')[1:])
         colname = convertColName(colname)
         topic = getVariableTopic(colname)
@@ -141,16 +144,24 @@ def makeShutoMap(varList, mappingArea='in23Wards'):
     with open('src/data/columns.json', 'w') as f:
         json.dump(extractDict, f)
     # Start the process
-    str_DATA_PATH = DATA_PATH.replace(' ', '\ ')
-    command = f"http-server --cors -p 8081 {str_DATA_PATH} &"
+    if isWindows:
+        str_DATA_PATH = '"' + DATA_PATH + '"'
+    else:
+        str_DATA_PATH = DATA_PATH.replace(' ', '\ ')
+    command = f"http-server --cors -p 8081 {str_DATA_PATH}"
     print("Running the command:", command)
-    subprocess.check_call(command, shell=True)
-    subprocess.check_call('npm start', shell=True)
-
+    if isWindows:
+        with open("launchDataScope_"+os.environ["USERNAME"]+".bat", 'w') as f:
+            f.write("start " + command)
+            cwd = os.getcwd()
+            f.write("\nstart npm start --prefix " + cwd)
+    else:
+        subprocess.check_call(command + " &", shell=True)
+        subprocess.check_call("npm start", shell=True)
+    
 
 if __name__ == "__main__":
-    varList = [
-               'Hex_CrimeTotalRate',
+    varList = ['Hex_CrimeTotalRate',
                'Hex_CrimeFelonyRobberyRate',
                'Hex_CrimeFelonyOtherRate',
                'Hex_CrimeViolentWeaponsRate',
@@ -185,7 +196,6 @@ if __name__ == "__main__":
                'Hex_ElevationMin',
                'Hex_ElevationMean',
                'Hex_ElevationMax',
-               'Hex_SlopeMin',
                'Hex_SlopeMean',
                'Hex_SlopeMedian',
                'Hex_SlopeMax',
@@ -203,14 +213,72 @@ if __name__ == "__main__":
                'Hex_Pop_percent30-44yr',
                'Hex_TimeToTokyo',
                'Hex_TimeAndCostToTokyo',
-               'Chome_NoiseMean'
-    ]
+               'Chome_NoiseMean']
     mappingArea = 'in23Wards'
 
-    # print("HEX")
-    # print(getVariableList('hexData'))
-    # print("CHOME")
-    # print(getVariableList('chomeData'))
-    createCore(['hex', 'chome'], mappingArea)
-    splitFromVarList(varList, mappingArea)
+#    createCore(['hex', 'chome'], mappingArea)
+    #splitFromVarList(varList, mappingArea)
     makeShutoMap(varList, mappingArea)
+
+
+
+
+
+
+
+
+
+####=============================================================================
+####================= CREATE VARIABLE LISTS FOR VIZENGINE =======================
+####=============================================================================
+
+#thisVarList = ['elevationMin', 'elevationMean', 'elevationMax', 'slopeMin', 'slopeMean', 'slopeMedian', 'slopeMax']
+#addVarsToLocatorDict(thisVarList, "Geography", dataType='hexData')
+
+#addVarsToLocatorDict('totalPopulation', "Core", dataType='hexData')
+##
+#print(readPickleFile('../Data/DataMasters/variableLocatorDict.pkl')['hexData'])
+
+#print(list(getDataForTopic("Population")))
+
+#allVarList = getVisVarNames("Crime", dataType='hexData') + getVisVarNames("Economics", dataType='hexData') + getVisVarNames("Environment", dataType='hexData') + getVisVarNames("Geography", dataType='hexData') + getVisVarNames("Population", dataType='hexData') + getVisVarNames("Transportation", dataType='hexData')
+#
+#print(allVarList)
+#print("Num hexData variables for far:", len(allVarList))
+
+#varsToUse = ['Hex_CrimeTotalRate', 'Hex_CrimeFelonyRobberyRate', 'Hex_CrimeFelonyOtherRate', 'Hex_CrimeViolentWeaponsRate', 'Hex_CrimeViolentAssaultRate', 'Hex_CrimeViolentInjuryRate', 'Hex_CrimeViolentIntimidationRate', 'Hex_CrimeViolentExtortionRate', 'Hex_CrimeTheftBurglarySafeRate', 'Hex_CrimeTheftBurglaryEmptyHomeRate', 'Hex_CrimeTheftBurglaryHomeSleepingRate', 'Hex_CrimeTheftBurglaryHomeUnnoticedRate', 'Hex_CrimeTheftBurglaryOtherRate', 'Hex_CrimeTheftVehicleRate', 'Hex_CrimeTheftMotorcycleRate', 'Hex_CrimeTheftPickPocketRate', 'Hex_CrimeTheftPurseSnatchingRate', 'Hex_CrimeTheftBagLiftingRate', 'Hex_CrimeTheftOtherRate', 'Hex_CrimeOtherMoralIndecencyRate', 'Hex_CrimeOtherOtherRate', 'Hex_NumJobs', 'Hex_NumCompanies', 'Hex_GreenArea', 'Hex_NoiseMin', 'Hex_NoiseMean', 'Hex_NoiseMax', 'Hex_PercentCommercial', 'Hex_PercentIndustrial', 'Hex_PercentResidential', 'Hex_MeanPercentLandCoverage', 'Hex_MeanTotalPercentLandCoverage', 'Hex_ElevationMin', 'Hex_ElevationMean', 'Hex_ElevationMax', 'Hex_SlopeMin', 'Hex_SlopeMean', 'Hex_SlopeMedian', 'Hex_SlopeMax', 'Hex_NumHouseholds', 'Hex_Pop_Total_A', 'Hex_Pop_0-19yr_A', 'Hex_Pop_20-69yr_A', 'Hex_Pop_70yr+_A', 'Hex_Pop_20-29yr_A', 'Hex_Pop_30-44yr_A', 'Hex_Pop_percentForeigners', 'Hex_Pop_percentChildren', 'Hex_Pop_percentMale', 'Hex_Pop_percentFemale', 'Hex_Pop_percent30-44yr', 'Hex_TimeToTokyo', 'Hex_TimeAndCostToTokyo']
+#
+#for thisVar in varsToUse:
+#    print('''        "'''+thisVar+'''": {
+#            "colors": "white2red",
+#            "reverse": false,
+#            "type": "standardized",
+#            "interpolate": true
+#        },''')
+#
+#
+#for thisVar in varsToUse:
+#    print("               '"+thisVar+"',")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#####======================================== END OF FILE ===========================================

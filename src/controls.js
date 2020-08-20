@@ -36,7 +36,7 @@ export const HEXAGON_CONTROLS = {
     value: 144.5,
     step: 1,
     min: 140,
-    max: 160 
+    max: 160
   },
   coverage: {
     displayName: 'Hexagon Coverage',
@@ -248,7 +248,7 @@ export class LayerControls extends Component {
           accordionButtonStyle={this._accordionButtonStyle.bind(this)}
           toggleTopicSelection={this._toggleTopicSelection.bind(this)}
         />
-        
+
       </div>
     );
   }
@@ -258,7 +258,7 @@ const DtypeSelector = ({ dtypes, currentType, selectType }) => {
   return (
     <div style={dtypeSelector} className="btn-group dropright">
       <button className="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        {currentType ? currentType : "Select Dtype"}
+        {currentType ? currentType : "Select Data Type"}
       </button>
       <div className="dropdown-menu">
         {dtypes.map(dtype => (
@@ -269,7 +269,7 @@ const DtypeSelector = ({ dtypes, currentType, selectType }) => {
   );
 };
 
-const AccordionMenu = ({ topics, selectedType, settings, propTypes, 
+const AccordionMenu = ({ topics, selectedType, settings, propTypes,
                          onValueChange, accordionButtonStyle, toggleTopicSelection }) => {
   return (
     <div className="layer-controls" style={layerControl} id="accordion">

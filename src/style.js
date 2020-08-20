@@ -86,7 +86,7 @@ export const mapStylePicker = {
 export const chartToggler = {
   borderRadius: 10,
   fontSize: '1rem',
-  width: 200,
+  width: 250,
   position: 'absolute',
   top: '630px',
   left: '20px',
@@ -110,14 +110,16 @@ export const legendStyle = {
   fontWeight: 'bold',
   width: 200,
   position: 'absolute',
-  bottom: '100px',
-  right: '20px',
+  bottom: '95px',
+  right: '21px',
   padding: '10px',
   paddingLeft: '30px',
   paddingRight: '30px',
   zIndex: 100,
-  maxHeight: 300,
+  //height: 300,
+  maxHeight: 600,
   textAlign: 'center',
+  overflowX: 'hidden',
   //color: 'white',
   //backgroundColor: 'rgba(0, 0, 0, 0.7)',
   boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
@@ -125,15 +127,15 @@ export const legendStyle = {
   color: 'rgba(55, 55, 55, 0.8)',
   borderStyle: 'solid',
   borderWidth: '1px',
-  borderColor: 'rgba(32, 141, 214, 0.6)',
-  overflowX: 'hidden'
+  borderColor: 'rgba(32, 141, 214, 0.6)'
 };
+
 
 export const logoStyle = {
   position: 'absolute',
-  bottom: '10px',
-  right: '20px',
-  height: 90
+  bottom: '18px',
+  right: '0px',
+  height: 68
 }
 
 export const charts = {
@@ -145,8 +147,8 @@ export const charts = {
   lineHeight: 1.833,
   padding: '10px',
   position: 'absolute',
-  right: 20,
-  top: 61,
+  left: 20,
+  bottom: 20,
   zIndex: 100,
   //color: 'white',
   //backgroundColor: 'rgba(0, 0, 0, 0.7)'

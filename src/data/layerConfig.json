@@ -176,18 +176,24 @@
         },
         "Hex_NumJobs": {
             "colors": "white2blue",
+            "scale": [0, 250, 500, 1000, 2000, 4000, 8000, 16000],
+            "scaleBy": "value",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
         },
         "Hex_NumCompanies": {
             "colors": "white2blue",
+            "scale": [0, 10, 25, 50, 100, 200, 400, 800],
+            "scaleBy": "value",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
         },
         "Hex_GreenArea": {
-            "colors": "white2green",
+            "colors": "clear2green",
+            "scale": [0, 100, 500, 1000, 5000, 10000, 25000, 54000],
+            "scaleBy": "value",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
@@ -211,19 +217,19 @@
             "interpolate": true
         },
         "Hex_PercentCommercial": {
-            "colors": "white2blue",
+            "colors": "clear2blue",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
         },
         "Hex_PercentIndustrial": {
-            "colors": "white2red",
+            "colors": "clear2red",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
         },
         "Hex_PercentResidential": {
-            "colors": "white2green",
+            "colors": "clear2green",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
@@ -235,25 +241,33 @@
             "interpolate": true
         },
         "Hex_MeanTotalPercentLandCoverage": {
-            "colors": "white2black",
+            "colors": "white2purple",
+            "scale": [0, 50, 100, 150, 200, 500, 1000, 1300],
+            "scaleBy": "value",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
         },
         "Hex_ElevationMin": {
             "colors": "green2brown",
+            "scale": [-50, 0, 10, 25, 100, 250, 350, 500],
+            "scaleBy": "value",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
         },
         "Hex_ElevationMean": {
             "colors": "green2brown",
+            "scale": [-50, 0, 10, 25, 100, 250, 350, 500],
+            "scaleBy": "value",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
         },
         "Hex_ElevationMax": {
             "colors": "green2brown",
+            "scale": [-50, 0, 10, 25, 100, 250, 350, 500],
+            "scaleBy": "value",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
@@ -291,7 +305,7 @@
         "Hex_Pop_Total_A": {
             "colors": "white2green",
             "reverse": false,
-            "type": "normalized",
+            "type": "standardized",
             "interpolate": true
         },
         "Hex_Pop_0-19yr_A": {
@@ -326,30 +340,40 @@
         },
         "Hex_Pop_percentForeigners": {
             "colors": "white2purple",
+            "scale": [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0],
+            "scaleBy": "value",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
         },
         "Hex_Pop_percentChildren": {
             "colors": "white2green",
+            "scale": [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0],
+            "scaleBy": "value",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
         },
         "Hex_Pop_percentMale": {
-            "colors": "white2green",
+            "colors": "thermometer_varTrans",
+            "scale": [0.0, 0.25,0.35, 0.45, 0.5, 0.55, 0.65, 0.75, 1.0],
+            "scaleBy": "value",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
         },
         "Hex_Pop_percentFemale": {
-            "colors": "white2green",
-            "reverse": false,
+            "colors": "thermometer_varTrans",
+            "scale": [0.0, 0.25,0.35, 0.45, 0.5, 0.55, 0.65, 0.75, 1.0],
+            "scaleBy": "value",
+            "reverse": true,
             "type": "standardized",
             "interpolate": true
         },
         "Hex_Pop_percent30-44yr": {
             "colors": "white2green",
+            "scale": [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0],
+            "scaleBy": "value",
             "reverse": false,
             "type": "standardized",
             "interpolate": true
